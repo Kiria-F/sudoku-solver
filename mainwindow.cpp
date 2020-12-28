@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     {
         for (int x = 0; x < 9; x++)
         {
-            CoordsOF cf{y, x};
+            CoordsOfField cf{y, x};
             QLineEdit* field = getField(cf);
             field->setAlignment(Qt::AlignCenter);
             field->setMaxLength(1);
@@ -26,7 +26,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QLineEdit* MainWindow::getField(CoordsOF cof)
+QLineEdit* MainWindow::getField(CoordsOfField cof)
 {
     switch (cof.y)
     {
@@ -430,7 +430,7 @@ QLineEdit* MainWindow::getField(CoordsOF cof)
     return nullptr;
 }
 
-void MainWindow::setFieldValue(CoordsOF cof, const int value)
+void MainWindow::setFieldValue(CoordsOfField cof, const int value)
 {
     if (value)
     {
@@ -442,12 +442,12 @@ void MainWindow::setFieldValue(CoordsOF cof, const int value)
     }
 }
 
-int MainWindow::getFieldValue(CoordsOF cof)
+int MainWindow::getFieldValue(CoordsOfField cof)
 {
     return getField(cof)->text().toInt();
 }
 
-bool MainWindow::fieldValidation(CoordsOF cof) {
+bool MainWindow::fieldValidation(CoordsOfField cof) {
     int xs = cof.x/3; xs *= 3;
     int ys = cof.x/3; ys *= 3;
 
@@ -476,7 +476,7 @@ void MainWindow::loadToMemoryGridFromUI()
     {
         for (int x = 0; x < 9; x++)
         {
-            CoordsOF cf{y, x};
+            CoordsOfField cf{y, x};
             memoryGrid[y][x] = getFieldValue(cf);
         }
     }
@@ -493,7 +493,7 @@ void MainWindow::loadToActualGridFromMemoryFrid()
     }
 }
 
-void MainWindow::updateField(CoordsOF cof)
+void MainWindow::updateField(CoordsOfField cof)
 {
     setFieldValue(cof, actualGrid[cof.y][cof.x]);
 }
@@ -504,7 +504,7 @@ void MainWindow::updateGrid(int grid[9][9])
     {
         for (int x = 0; x < 9; x++)
         {
-            CoordsOF cf{y,x};
+            CoordsOfField cf{y,x};
             setFieldValue(cf, grid[cf.y][cf.x]);
         }
     }
@@ -519,4 +519,55 @@ void MainWindow::on_pushButton_Load_clicked()
 void MainWindow::on_pushButton_Restore_clicked()
 {
     updateGrid(memoryGrid);
+}
+
+Step MainWindow::getNextStep()
+{
+    if (getFieldValue(iterator) != 9)
+    {
+        if (!fieldValidation(iterator))
+        {
+            return Step::CHANGE;
+        }
+        else
+        {
+            return Step::NEXT;
+        }
+    }
+    return Step::BACK;
+}
+
+void MainWindow::doStep(Step step)
+{
+    switch (step)
+    {
+    case Step::CHANGE:
+    {
+        actualGrid[iterator.y][iterator.x]++;
+    }
+    case Step::NEXT:
+    {
+        if (iterator.x != 8)
+        {
+            iterator.x++;
+        }
+        else
+        {
+            iterator.y++;
+            iterator.x = 0;
+        }
+    }
+    case Step::BACK:
+    {
+        if (iterator.x != 0)
+        {
+            iterator.x--;
+        }
+        else
+        {
+            iterator.y--;
+            iterator.x = 8;
+        }
+    }
+    }
 }

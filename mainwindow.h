@@ -4,14 +4,21 @@
 #include <QMainWindow>
 #include <QLineEdit>
 
-enum step
+enum Step
 {
     BACK,
     CHANGE,
     NEXT
 };
 
-struct CoordsOF
+enum Result
+{
+    OK,
+    ERROR,
+    END
+};
+
+struct CoordsOfField
 {
     int y;
     int x;
@@ -27,19 +34,21 @@ class MainWindow : public QMainWindow
 
     int memoryGrid[9][9];
     int actualGrid[9][9];
+    CoordsOfField iterator;
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    QLineEdit* getField(CoordsOF cof);
-    void setFieldValue(CoordsOF cof, const int value);
-    int getFieldValue(CoordsOF cof);
-    bool fieldValidation(CoordsOF cof);
+    QLineEdit* getField(CoordsOfField cof);
+    void setFieldValue(CoordsOfField cof, const int value);
+    int getFieldValue(CoordsOfField cof);
+    bool fieldValidation(CoordsOfField cof);
     void loadToMemoryGridFromUI();
     void loadToActualGridFromMemoryFrid();
-    void updateField(CoordsOF cf);
+    void updateField(CoordsOfField cf);
     void updateGrid(int grid[9][9]);
-
+    Step getNextStep();
+    void doStep(Step step);
 
 private slots:
 
