@@ -436,3 +436,8 @@ int MainWindow::getFieldValue(const int y, const int x)
 {
     return getField(y, x)->text().toInt();
 }
+
+bool MainWindow::fieldValidation(const int y, const int x)
+{
+    //swallow my code
+}
