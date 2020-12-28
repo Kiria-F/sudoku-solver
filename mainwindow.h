@@ -4,10 +4,17 @@
 #include <QMainWindow>
 #include <QLineEdit>
 
-enum step {
+enum step
+{
     BACK,
     CHANGE,
     NEXT
+};
+
+struct field
+{
+    int y;
+    int x;
 };
 
 QT_BEGIN_NAMESPACE
