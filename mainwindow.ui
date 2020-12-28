@@ -37,7 +37,7 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <layout class="QGridLayout" name="gridLayout_16">
+       <layout class="QGridLayout" name="gridLayout_main">
         <item row="1" column="3">
          <layout class="QGridLayout" name="gridLayout_1_1">
           <item row="0" column="0">
@@ -2045,6 +2045,92 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>lineEdit_0_0</tabstop>
+  <tabstop>lineEdit_0_1</tabstop>
+  <tabstop>lineEdit_0_2</tabstop>
+  <tabstop>lineEdit_0_3</tabstop>
+  <tabstop>lineEdit_0_4</tabstop>
+  <tabstop>lineEdit_0_5</tabstop>
+  <tabstop>lineEdit_0_6</tabstop>
+  <tabstop>lineEdit_0_7</tabstop>
+  <tabstop>lineEdit_0_8</tabstop>
+  <tabstop>lineEdit_1_0</tabstop>
+  <tabstop>lineEdit_1_1</tabstop>
+  <tabstop>lineEdit_1_2</tabstop>
+  <tabstop>lineEdit_1_3</tabstop>
+  <tabstop>lineEdit_1_4</tabstop>
+  <tabstop>lineEdit_1_5</tabstop>
+  <tabstop>lineEdit_1_6</tabstop>
+  <tabstop>lineEdit_1_7</tabstop>
+  <tabstop>lineEdit_1_8</tabstop>
+  <tabstop>lineEdit_2_0</tabstop>
+  <tabstop>lineEdit_2_1</tabstop>
+  <tabstop>lineEdit_2_2</tabstop>
+  <tabstop>lineEdit_2_3</tabstop>
+  <tabstop>lineEdit_2_4</tabstop>
+  <tabstop>lineEdit_2_5</tabstop>
+  <tabstop>lineEdit_2_7</tabstop>
+  <tabstop>lineEdit_2_6</tabstop>
+  <tabstop>lineEdit_2_8</tabstop>
+  <tabstop>lineEdit_3_0</tabstop>
+  <tabstop>lineEdit_3_1</tabstop>
+  <tabstop>lineEdit_3_2</tabstop>
+  <tabstop>lineEdit_3_3</tabstop>
+  <tabstop>lineEdit_3_4</tabstop>
+  <tabstop>lineEdit_3_5</tabstop>
+  <tabstop>lineEdit_3_6</tabstop>
+  <tabstop>lineEdit_3_7</tabstop>
+  <tabstop>lineEdit_3_8</tabstop>
+  <tabstop>lineEdit_4_0</tabstop>
+  <tabstop>lineEdit_4_1</tabstop>
+  <tabstop>lineEdit_4_2</tabstop>
+  <tabstop>lineEdit_4_3</tabstop>
+  <tabstop>lineEdit_4_4</tabstop>
+  <tabstop>lineEdit_4_5</tabstop>
+  <tabstop>lineEdit_4_6</tabstop>
+  <tabstop>lineEdit_4_7</tabstop>
+  <tabstop>lineEdit_4_8</tabstop>
+  <tabstop>lineEdit_5_0</tabstop>
+  <tabstop>lineEdit_5_1</tabstop>
+  <tabstop>lineEdit_5_2</tabstop>
+  <tabstop>lineEdit_5_3</tabstop>
+  <tabstop>lineEdit_5_4</tabstop>
+  <tabstop>lineEdit_5_5</tabstop>
+  <tabstop>lineEdit_5_6</tabstop>
+  <tabstop>lineEdit_5_7</tabstop>
+  <tabstop>lineEdit_5_8</tabstop>
+  <tabstop>lineEdit_6_0</tabstop>
+  <tabstop>lineEdit_6_1</tabstop>
+  <tabstop>lineEdit_6_2</tabstop>
+  <tabstop>lineEdit_6_3</tabstop>
+  <tabstop>lineEdit_6_4</tabstop>
+  <tabstop>lineEdit_6_5</tabstop>
+  <tabstop>lineEdit_6_6</tabstop>
+  <tabstop>lineEdit_6_7</tabstop>
+  <tabstop>lineEdit_6_8</tabstop>
+  <tabstop>lineEdit_7_0</tabstop>
+  <tabstop>lineEdit_7_1</tabstop>
+  <tabstop>lineEdit_7_2</tabstop>
+  <tabstop>lineEdit_7_3</tabstop>
+  <tabstop>lineEdit_7_4</tabstop>
+  <tabstop>lineEdit_7_5</tabstop>
+  <tabstop>lineEdit_7_6</tabstop>
+  <tabstop>lineEdit_7_7</tabstop>
+  <tabstop>lineEdit_7_8</tabstop>
+  <tabstop>lineEdit_8_0</tabstop>
+  <tabstop>lineEdit_8_1</tabstop>
+  <tabstop>lineEdit_8_2</tabstop>
+  <tabstop>lineEdit_8_3</tabstop>
+  <tabstop>lineEdit_8_4</tabstop>
+  <tabstop>lineEdit_8_5</tabstop>
+  <tabstop>lineEdit_8_6</tabstop>
+  <tabstop>lineEdit_8_7</tabstop>
+  <tabstop>lineEdit_8_8</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>pushButton_2</tabstop>
+  <tabstop>pushButton_3</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
