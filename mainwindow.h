@@ -11,7 +11,7 @@ enum step
     NEXT
 };
 
-struct field
+struct Field
 {
     int y;
     int x;
@@ -39,6 +39,7 @@ public:
     void loadToActualGridFromMemoryFrid();
     void updateField(const int y, const int x);
     void updateGrid(int grid[9][9]);
+
 
 private slots:
 
