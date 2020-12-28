@@ -27,6 +27,12 @@ public:
     void updateField(const int y, const int x);
     void updateGrid(int grid[9][9]);
 
+private slots:
+
+    void on_pushButton_Load_clicked();
+
+    void on_pushButton_Restore_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

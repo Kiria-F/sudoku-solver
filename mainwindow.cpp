@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
             QLineEdit* field = getField(y, x);
             field->setAlignment(Qt::AlignCenter);
             field->setMaxLength(1);
+            memoryGrid[y][x] = 0;
+            actualGrid[y][x] = 0;
         }
     }
 }
@@ -429,7 +431,14 @@ QLineEdit* MainWindow::getField(const int y, const int x)
 
 void MainWindow::setFieldValue(const int y, const int x, const int value)
 {
-    getField(y, x)->setText(QString::number(value));
+    if (value)
+    {
+        getField(y, x)->setText(QString::number(value));
+    }
+    else
+    {
+        getField(y, x)->setText("");
+    }
 }
 
 int MainWindow::getFieldValue(const int y, const int x)
@@ -478,4 +487,15 @@ void MainWindow::updateGrid(int grid[9][9])
             setFieldValue(y, x, grid[y][x]);
         }
     }
+}
+
+void MainWindow::on_pushButton_Load_clicked()
+{
+    loadToMemoryGridFromUI();
+    loadToActualGridFromMemoryFrid();
+}
+
+void MainWindow::on_pushButton_Restore_clicked()
+{
+    updateGrid(memoryGrid);
 }

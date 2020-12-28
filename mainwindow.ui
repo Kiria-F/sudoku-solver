@@ -2095,21 +2095,21 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="pushButton_Load">
           <property name="text">
            <string>Load</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="pushButton_Solve">
           <property name="text">
            <string>Solve</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_3">
+         <widget class="QPushButton" name="pushButton_Restore">
           <property name="text">
            <string>Restore</string>
           </property>
@@ -2241,9 +2241,9 @@
   <tabstop>lineEdit_8_6</tabstop>
   <tabstop>lineEdit_8_7</tabstop>
   <tabstop>lineEdit_8_8</tabstop>
-  <tabstop>pushButton</tabstop>
-  <tabstop>pushButton_2</tabstop>
-  <tabstop>pushButton_3</tabstop>
+  <tabstop>pushButton_Load</tabstop>
+  <tabstop>pushButton_Solve</tabstop>
+  <tabstop>pushButton_Restore</tabstop>
  </tabstops>
  <resources/>
  <connections/>
