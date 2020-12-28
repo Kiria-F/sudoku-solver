@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -454,17 +455,41 @@ bool MainWindow::fieldValidation(CoordsOfField cof) {
     for(int i = 0; i <= 2; i++) {
         for(int j = 0; j <= 2; j++) {
             if (xs+j != cof.x && ys+i != cof.y) {
-                if (actualGrid[cof.y][cof.x] == actualGrid[ys+i][xs+j]) return false;
+                if (actualGrid[cof.y][cof.x] == actualGrid[ys+i][xs+j])
+                {
+                    return false;
+                }
             }
         }
     }
 
     for (int i = 0; i < 9; i++) {
         if (i != cof.x) {
-            if (actualGrid[cof.y][i] == actualGrid[cof.x][cof.y]) return false;
+            if (actualGrid[cof.y][i] == actualGrid[cof.x][cof.y])
+            {
+                return false;
+            }
         }
         if (i != cof.y) {
-            if (actualGrid[i][cof.x] == actualGrid[cof.x][cof.y]) return false;
+            if (actualGrid[i][cof.x] == actualGrid[cof.x][cof.y])
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool MainWindow::gridValidation()
+{
+    for (int y = 0; y < 9; y++)
+    {
+        for (int x = 0 ; x < 9; x++)
+        {
+            if (!fieldValidation({y, x}))
+            {
+                return false;
+            }
         }
     }
     return true;
@@ -510,6 +535,17 @@ void MainWindow::updateGrid(int grid[9][9])
     }
 }
 
+void MainWindow::setFieldsEnabled(bool enable)
+{
+    for (int y = 0; y < 9; y++)
+    {
+        for (int x = 0; x < 9; x++)
+        {
+            getField({y, x})->setEnabled(enable);
+        }
+    }
+}
+
 void MainWindow::on_pushButton_Load_clicked()
 {
     int example[9][9] = {
@@ -539,6 +575,31 @@ void MainWindow::on_pushButton_Solve_clicked()
 void MainWindow::on_pushButton_Restore_clicked()
 {
     updateGrid(memoryGrid);
+}
+
+void MainWindow::on_pushButton_Step_clicked()
+{
+    stepSolve();
+}
+
+void MainWindow::on_pushButton_Set_clicked()
+{
+    loadToMemoryGridFromUI();
+    loadToActualGridFromMemoryGrid();
+}
+
+void MainWindow::on_pushButton_DebugArray_clicked()
+{
+    for (int y = 0; y < 9; y++)
+    {
+        QString debugString = " ";
+        for (int x = 0; x < 9; x++)
+        {
+            debugString.append(QString::number(actualGrid[y][x])).append(' ');
+        }
+        qDebug() << debugString;
+    }
+    qDebug() << "\n\n";
 }
 
 bool MainWindow::next()
@@ -614,8 +675,26 @@ void MainWindow::solve()
 {
     bool solved = false;
     bool error = false;
+    setFieldsEnabled(false);
     while (!solved && !error)
     {
         error = !doStep();
+        if (iterator.x == 8 && iterator.y == 8)
+        {
+            solved = gridValidation();
+        }
+    }
+    setFieldsEnabled(true);
+}
+
+void MainWindow::stepSolve()
+{
+    stepSolve_error = !doStep();
+    ui->lineEdit_X->setText(QString::number(iterator.x));
+    ui->lineEdit_Y->setText(QString::number(iterator.y));
+    updateField(iterator);
+    if (iterator.x == 8 && iterator.y == 8)
+    {
+        stepSolve_solved = gridValidation();
     }
 }
