@@ -11,7 +11,9 @@ MainWindow::MainWindow(QWidget *parent)
     {
         for (int x = 0; x < 9; x++)
         {
-            getField(y, x)->setAlignment(Qt::AlignCenter);
+            QLineEdit* field = getField(y, x);
+            field->setAlignment(Qt::AlignCenter);
+            field->setMaxLength(1);
         }
     }
 }
