@@ -543,9 +543,9 @@ void MainWindow::on_pushButton_Restore_clicked()
 
 bool MainWindow::next()
 {
-    if(iterator.x < 8) iterator.x +=1;
+    if(iterator.x < 8) iterator.x++;
     if(iterator.x == 8) {
-        iterator.y += 1; iterator.x = 0;
+        iterator.y++; iterator.x = 0;
     }
     return true;
     if (iterator.x == 8 && iterator.y == 8) return false;
@@ -553,9 +553,9 @@ bool MainWindow::next()
 
 bool MainWindow::back()
 {
-    if(iterator.x > 0) iterator.x -=1;
+    if(iterator.x > 0) iterator.x--;
     if(iterator.x == 0) {
-        iterator.y -= 1; iterator.x = 8;
+        iterator.y--; iterator.x = 8;
     }
     return true;
     if (iterator.x == 0 && iterator.y == 0) return false;
