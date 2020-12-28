@@ -441,3 +441,41 @@ bool MainWindow::fieldValidation(const int y, const int x)
 {
     //swallow my code
 }
+
+void MainWindow::loadToMemoryGridFromUI()
+{
+    for (int y = 0; y < 9; y++)
+    {
+        for (int x = 0; x < 9; x++)
+        {
+            memoryGrid[y][x] = getFieldValue(y, x);
+        }
+    }
+}
+
+void MainWindow::loadToActualGridFromMemoryFrid()
+{
+    for (int y = 0; y < 9; y++)
+    {
+        for (int x = 0; x < 9; x++)
+        {
+            actualGrid[y][x] = memoryGrid[y][x];
+        }
+    }
+}
+
+void MainWindow::updateField(const int y, const int x)
+{
+    setFieldValue(y, x, actualGrid[y][x]);
+}
+
+void MainWindow::updateGrid(int grid[9][9])
+{
+    for (int y = 0; y < 9; y++)
+    {
+        for (int x = 0; x < 9; x++)
+        {
+            setFieldValue(y, x, grid[y][x]);
+        }
+    }
+}

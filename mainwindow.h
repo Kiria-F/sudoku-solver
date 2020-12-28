@@ -22,6 +22,10 @@ public:
     void setFieldValue(const int y, const int x, const int value);
     int getFieldValue(const int y, const int x);
     bool fieldValidation(const int y, const int x);
+    void loadToMemoryGridFromUI();
+    void loadToActualGridFromMemoryFrid();
+    void updateField(const int y, const int x);
+    void updateGrid(int grid[9][9]);
 
 private:
     Ui::MainWindow *ui;
