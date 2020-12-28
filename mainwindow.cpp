@@ -521,6 +521,16 @@ void MainWindow::on_pushButton_Restore_clicked()
     updateGrid(memoryGrid);
 }
 
+void MainWindow::next()
+{
+
+}
+
+void MainWindow::back()
+{
+
+}
+
 Step MainWindow::getNextStep()
 {
     if (getFieldValue(iterator) != 9)
@@ -570,4 +580,9 @@ void MainWindow::doStep(Step step)
         }
     }
     }
+}
+
+void MainWindow::solve()
+{
+
 }

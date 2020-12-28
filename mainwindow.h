@@ -47,8 +47,11 @@ public:
     void loadToActualGridFromMemoryGrid();
     void updateField(CoordsOfField cf);
     void updateGrid(int grid[9][9]);
+    void next();
+    void back();
     Step getNextStep();
     void doStep(Step step);
+    void solve();
 
 private slots:
 
