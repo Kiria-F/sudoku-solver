@@ -50,7 +50,7 @@ public:
     bool next();
     bool back();
     Step getNextStep();
-    void doStep(Step step);
+    bool doStep();
     void solve();
 
 private slots:

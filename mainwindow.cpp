@@ -577,42 +577,45 @@ Step MainWindow::getNextStep()
     return Step::BACK;
 }
 
-void MainWindow::doStep(Step step)
+bool MainWindow::doStep()
 {
+    Step step = getNextStep();
     switch (step)
     {
     case Step::CHANGE:
     {
-        actualGrid[iterator.y][iterator.x]++;
+        if (actualGrid[iterator.y][iterator.x] < 9)
+        {
+            actualGrid[iterator.y][iterator.x]++;
+            return true;
+        }
+        return false;
     }
     case Step::NEXT:
     {
-        if (iterator.x != 8)
+        if (next())
         {
-            iterator.x++;
+            return true;
         }
-        else
-        {
-            iterator.y++;
-            iterator.x = 0;
-        }
+        return false;
     }
     case Step::BACK:
     {
-        if (iterator.x != 0)
+        if (back())
         {
-            iterator.x--;
+            return true;
         }
-        else
-        {
-            iterator.y--;
-            iterator.x = 8;
-        }
+        return false;
     }
     }
 }
 
 void MainWindow::solve()
 {
-
+    bool solved = false;
+    bool error = false;
+    while (!solved && !error)
+    {
+        error = !doStep();
+    }
 }
