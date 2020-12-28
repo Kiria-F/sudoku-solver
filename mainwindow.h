@@ -56,7 +56,7 @@ public:
 private slots:
 
     void on_pushButton_Load_clicked();
-
+    void on_pushButton_Solve_clicked();
     void on_pushButton_Restore_clicked();
 
 private:

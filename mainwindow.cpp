@@ -512,8 +512,28 @@ void MainWindow::updateGrid(int grid[9][9])
 
 void MainWindow::on_pushButton_Load_clicked()
 {
+    int example[9][9] = {
+        {6, 3, 0,  7, 8, 0,  0, 5, 0},
+        {8, 5, 0,  0, 1, 4,  0, 0, 0},
+        {0, 7, 1,  0, 9, 6,  0, 4, 8},
+
+        {9, 0, 0,  1, 7, 0,  2, 0, 5},
+        {7, 8, 2,  4, 6, 0,  0, 0, 0},
+        {0, 0, 5,  0, 0, 0,  6, 7, 4},
+
+        {0, 0, 3,  2, 0, 8,  5, 6, 0},
+        {5, 0, 0,  9, 0, 7,  4, 0, 2},
+        {4, 2, 7,  0, 5, 1,  0, 3, 0}
+
+    };
+    updateGrid(example);
+}
+
+void MainWindow::on_pushButton_Solve_clicked()
+{
     loadToMemoryGridFromUI();
     loadToActualGridFromMemoryGrid();
+    solve();
 }
 
 void MainWindow::on_pushButton_Restore_clicked()
