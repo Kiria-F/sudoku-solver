@@ -12,8 +12,8 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-    int memoryField[9][9];
-    int actualField[9][9];
+    int memoryGrid[9][9];
+    int actualGrid[9][9];
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -22,7 +22,6 @@ public:
     void setFieldValue(const int y, const int x, const int value);
     int getFieldValue(const int y, const int x);
     bool fieldValidation(const int y, const int x);
-
 
 private:
     Ui::MainWindow *ui;
