@@ -44,7 +44,7 @@ public:
     int getFieldValue(CoordsOfField cof);
     bool fieldValidation(CoordsOfField cof);
     void loadToMemoryGridFromUI();
-    void loadToActualGridFromMemoryFrid();
+    void loadToActualGridFromMemoryGrid();
     void updateField(CoordsOfField cf);
     void updateGrid(int grid[9][9]);
     Step getNextStep();

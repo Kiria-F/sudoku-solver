@@ -482,7 +482,7 @@ void MainWindow::loadToMemoryGridFromUI()
     }
 }
 
-void MainWindow::loadToActualGridFromMemoryFrid()
+void MainWindow::loadToActualGridFromMemoryGrid()
 {
     for (int y = 0; y < 9; y++)
     {
@@ -513,7 +513,7 @@ void MainWindow::updateGrid(int grid[9][9])
 void MainWindow::on_pushButton_Load_clicked()
 {
     loadToMemoryGridFromUI();
-    loadToActualGridFromMemoryFrid();
+    loadToActualGridFromMemoryGrid();
 }
 
 void MainWindow::on_pushButton_Restore_clicked()
