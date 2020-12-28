@@ -11,7 +11,7 @@ enum step
     NEXT
 };
 
-struct Field
+struct CoordsOF
 {
     int y;
     int x;
@@ -31,13 +31,13 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    QLineEdit* getField(const int y, const int x);
-    void setFieldValue(const int y, const int x, const int value);
-    int getFieldValue(const int y, const int x);
-    bool fieldValidation(const int y, const int x);
+    QLineEdit* getField(CoordsOF cof);
+    void setFieldValue(CoordsOF cof, const int value);
+    int getFieldValue(CoordsOF cof);
+    bool fieldValidation(CoordsOF cof);
     void loadToMemoryGridFromUI();
     void loadToActualGridFromMemoryFrid();
-    void updateField(const int y, const int x);
+    void updateField(CoordsOF cf);
     void updateGrid(int grid[9][9]);
 
 

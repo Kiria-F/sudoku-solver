@@ -11,7 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
     {
         for (int x = 0; x < 9; x++)
         {
-            QLineEdit* field = getField(y, x);
+            CoordsOF cf{y, x};
+            QLineEdit* field = getField(cf);
             field->setAlignment(Qt::AlignCenter);
             field->setMaxLength(1);
             memoryGrid[y][x] = 0;
@@ -25,13 +26,13 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QLineEdit* MainWindow::getField(const int y, const int x)
+QLineEdit* MainWindow::getField(CoordsOF cof)
 {
-    switch (y)
+    switch (cof.y)
     {
     case 0:
     {
-        switch (x)
+        switch (cof.x)
         {
         case 0:
         {
@@ -75,7 +76,7 @@ QLineEdit* MainWindow::getField(const int y, const int x)
     }
     case 1:
     {
-        switch (x)
+        switch (cof.x)
         {
         case 0:
         {
@@ -119,7 +120,7 @@ QLineEdit* MainWindow::getField(const int y, const int x)
     }
     case 2:
     {
-        switch (x)
+        switch (cof.x)
         {
         case 0:
         {
@@ -163,7 +164,7 @@ QLineEdit* MainWindow::getField(const int y, const int x)
     }
     case 3:
     {
-        switch (x)
+        switch (cof.x)
         {
         case 0:
         {
@@ -207,7 +208,7 @@ QLineEdit* MainWindow::getField(const int y, const int x)
     }
     case 4:
     {
-        switch (x)
+        switch (cof.x)
         {
         case 0:
         {
@@ -251,7 +252,7 @@ QLineEdit* MainWindow::getField(const int y, const int x)
     }
     case 5:
     {
-        switch (x)
+        switch (cof.x)
         {
         case 0:
         {
@@ -295,7 +296,7 @@ QLineEdit* MainWindow::getField(const int y, const int x)
     }
     case 6:
     {
-        switch (x)
+        switch (cof.x)
         {
         case 0:
         {
@@ -339,7 +340,7 @@ QLineEdit* MainWindow::getField(const int y, const int x)
     }
     case 7:
     {
-        switch (x)
+        switch (cof.x)
         {
         case 0:
         {
@@ -383,7 +384,7 @@ QLineEdit* MainWindow::getField(const int y, const int x)
     }
     case 8:
     {
-        switch (x)
+        switch (cof.x)
         {
         case 0:
         {
@@ -429,41 +430,41 @@ QLineEdit* MainWindow::getField(const int y, const int x)
     return nullptr;
 }
 
-void MainWindow::setFieldValue(const int y, const int x, const int value)
+void MainWindow::setFieldValue(CoordsOF cof, const int value)
 {
     if (value)
     {
-        getField(y, x)->setText(QString::number(value));
+        getField(cof)->setText(QString::number(value));
     }
     else
     {
-        getField(y, x)->setText("");
+        getField(cof)->setText("");
     }
 }
 
-int MainWindow::getFieldValue(const int y, const int x)
+int MainWindow::getFieldValue(CoordsOF cof)
 {
-    return getField(y, x)->text().toInt();
+    return getField(cof)->text().toInt();
 }
 
-bool MainWindow::fieldValidation(const int y, const int x) {
-    int xs = x/3; xs *= 3;
-    int ys = x/3; ys *= 3;
+bool MainWindow::fieldValidation(CoordsOF cof) {
+    int xs = cof.x/3; xs *= 3;
+    int ys = cof.x/3; ys *= 3;
 
     for(int i = 0; i <= 2; i++) {
         for(int j = 0; j <= 2; j++) {
-            if (xs+j != x && ys+i != y) {
-                if (actualGrid[y][x] == actualGrid[ys+i][xs+j]) return false;
+            if (xs+j != cof.x && ys+i != cof.y) {
+                if (actualGrid[cof.y][cof.x] == actualGrid[ys+i][xs+j]) return false;
             }
         }
     }
 
     for (int i = 0; i < 9; i++) {
-        if (i != x) {
-            if (actualGrid[y][i] == actualGrid[x][y]) return false;
+        if (i != cof.x) {
+            if (actualGrid[cof.y][i] == actualGrid[cof.x][cof.y]) return false;
         }
-        if (i != y) {
-            if (actualGrid[i][x] == actualGrid[x][y]) return false;
+        if (i != cof.y) {
+            if (actualGrid[i][cof.x] == actualGrid[cof.x][cof.y]) return false;
         }
     }
     return true;
@@ -475,7 +476,8 @@ void MainWindow::loadToMemoryGridFromUI()
     {
         for (int x = 0; x < 9; x++)
         {
-            memoryGrid[y][x] = getFieldValue(y, x);
+            CoordsOF cf{y, x};
+            memoryGrid[y][x] = getFieldValue(cf);
         }
     }
 }
@@ -491,9 +493,9 @@ void MainWindow::loadToActualGridFromMemoryFrid()
     }
 }
 
-void MainWindow::updateField(const int y, const int x)
+void MainWindow::updateField(CoordsOF cof)
 {
-    setFieldValue(y, x, actualGrid[y][x]);
+    setFieldValue(cof, actualGrid[cof.y][cof.x]);
 }
 
 void MainWindow::updateGrid(int grid[9][9])
@@ -502,7 +504,8 @@ void MainWindow::updateGrid(int grid[9][9])
     {
         for (int x = 0; x < 9; x++)
         {
-            setFieldValue(y, x, grid[y][x]);
+            CoordsOF cf{y,x};
+            setFieldValue(cf, grid[cf.y][cf.x]);
         }
     }
 }
