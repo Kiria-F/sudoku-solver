@@ -7,6 +7,13 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->setFixedSize(this->minimumSize());
+    for (int y = 0; y < 9; y++)
+    {
+        for (int x = 0; x < 9; x++)
+        {
+            getField(y, x)->setAlignment(Qt::AlignCenter);
+        }
+    }
 }
 
 MainWindow::~MainWindow()
