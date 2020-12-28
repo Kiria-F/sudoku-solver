@@ -21,6 +21,8 @@ public:
     QLineEdit* getField(const int y, const int x);
     void setFieldValue(const int y, const int x, const int value);
     int getFieldValue(const int y, const int x);
+    bool fieldValidation(const int y, const int x);
+
 
 private:
     Ui::MainWindow *ui;
