@@ -446,9 +446,27 @@ int MainWindow::getFieldValue(const int y, const int x)
     return getField(y, x)->text().toInt();
 }
 
-bool MainWindow::fieldValidation(const int y, const int x)
-{
-    //swallow my code
+bool MainWindow::fieldValidation(const int y, const int x) {
+    int xs = x/3; xs *= 3;
+    int ys = x/3; ys *= 3;
+
+    for(int i = 0; i <= 2; i++) {
+        for(int j = 0; j <= 2; j++) {
+            if (xs+j != x && ys+i != y) {
+                if (actualGrid[y][x] == actualGrid[ys+i][xs+j]) return false;
+            }
+        }
+    }
+
+    for (int i = 0; i < 9; i++) {
+        if (i != x) {
+            if (actualGrid[y][i] == actualGrid[x][y]) return false;
+        }
+        if (i != y) {
+            if (actualGrid[i][x] == actualGrid[x][y]) return false;
+        }
+    }
+    return true;
 }
 
 void MainWindow::loadToMemoryGridFromUI()
