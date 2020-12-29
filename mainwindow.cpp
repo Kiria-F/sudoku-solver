@@ -451,7 +451,7 @@ int MainWindow::getFieldValue(CoordsOfField cof)
 bool MainWindow::fieldValidation(CoordsOfField cof) {
     if(actualGrid[cof.y][cof.x] == 0) return false;
     int xs = cof.x/3; xs *= 3;
-    int ys = cof.x/3; ys *= 3;
+    int ys = cof.y/3; ys *= 3;
 
     for(int y = 0; y <= 2; y++) {
         for(int x = 0; x <= 2; x++) {
