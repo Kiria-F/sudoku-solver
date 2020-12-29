@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+#include <QThread>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -665,7 +666,7 @@ bool MainWindow::doStep()
         if (actualGrid[iterator.y][iterator.x] < 9)
         {
             stepSolve_prevNeedToChange = false;
-            qDebug() << stepSolve_prevNeedToChange;
+            //qDebug() << stepSolve_prevNeedToChange;
             actualGrid[iterator.y][iterator.x]++;
             return true;
         }
@@ -686,7 +687,7 @@ bool MainWindow::doStep()
         if (back())
         {
             stepSolve_prevNeedToChange = true;
-            qDebug() << stepSolve_prevNeedToChange;
+            //qDebug() << stepSolve_prevNeedToChange;
             return true;
         }
         return false;
@@ -702,12 +703,16 @@ void MainWindow::solve()
     while (!solved && !error)
     {
         error = !doStep();
-        updateGrid(actualGrid);
+        //updateGrid(actualGrid);
+        ui->lineEdit_X->setText(QString::number(iterator.x));
+        ui->lineEdit_Y->setText(QString::number(iterator.y));
+        updateField(iterator);
+        QCoreApplication::processEvents();
         if (iterator.x == 8 && iterator.y == 8)
         {
             solved = gridValidation();
         }
-
+        //QThread::msleep(1);
     }
     setFieldsEnabled(true);
 }
