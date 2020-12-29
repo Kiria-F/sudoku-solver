@@ -455,7 +455,7 @@ bool MainWindow::fieldValidation(CoordsOfField cof) {
 
     for(int y = 0; y <= 2; y++) {
         for(int x = 0; x <= 2; x++) {
-            if (xs+x != cof.x && ys+y != cof.y) {
+            if (xs+x != cof.x || ys+y != cof.y) {
                 if (actualGrid[cof.y][cof.x] == actualGrid[ys+y][xs+x]) {
                     return false;
                 }
