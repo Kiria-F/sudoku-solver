@@ -602,6 +602,7 @@ void MainWindow::on_pushButton_DebugArray_clicked()
 
 bool MainWindow::next()
 {
+    if (iterator.x == 8 && iterator.y == 8) return false;
     if(iterator.x < 8) {
         iterator.x++;
         return true;
@@ -610,11 +611,12 @@ bool MainWindow::next()
         iterator.y++; iterator.x = 0;
         return true;
     }
-    if (iterator.x == 8 && iterator.y == 8) return false;
+    return false;
 }
 
 bool MainWindow::back()
 {
+    if (iterator.x == 0 && iterator.y == 0) return false;
     if(iterator.x > 0) {
         iterator.x--;
         return true;
@@ -623,7 +625,7 @@ bool MainWindow::back()
         iterator.y--; iterator.x = 8;
         return true;
     }
-    if (iterator.x == 0 && iterator.y == 0) return false;
+    return false;
 }
 
 Step MainWindow::getNextStep()
