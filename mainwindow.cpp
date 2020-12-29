@@ -660,6 +660,7 @@ bool MainWindow::doStep()
     }
     case Step::BACK:
     {
+        actualGrid[iterator.y][iterator.x] = 0;
         if (back())
         {
             return true;
