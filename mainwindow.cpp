@@ -630,18 +630,15 @@ bool MainWindow::back()
 
 Step MainWindow::getNextStep()
 {
-    if (getFieldValue(iterator) != 9)
+    if (!fieldValidation(iterator))
     {
-        if (!fieldValidation(iterator))
+        if (getFieldValue(iterator) != 9)
         {
             return Step::CHANGE;
         }
-        else
-        {
-            return Step::NEXT;
-        }
+        return Step::BACK;
     }
-    return Step::BACK;
+    return Step::NEXT;
 }
 
 bool MainWindow::doStep()
