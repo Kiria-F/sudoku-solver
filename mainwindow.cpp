@@ -643,6 +643,11 @@ Step MainWindow::getNextStep()
 
 bool MainWindow::doStep()
 {
+    if (stepSolve_prevNextToChange)
+    {
+        stepSolve_prevNextToChange = false;
+        return Step::CHANGE;
+    }
     Step step = getNextStep();
     switch (step)
     {
@@ -668,6 +673,7 @@ bool MainWindow::doStep()
         actualGrid[iterator.y][iterator.x] = 0;
         if (back())
         {
+            stepSolve_prevNextToChange = true;
             return true;
         }
         return false;
