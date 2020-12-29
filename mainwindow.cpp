@@ -630,6 +630,15 @@ bool MainWindow::back()
 
 Step MainWindow::getNextStep()
 {
+    if (stepSolve_prevNeedToChange)
+    {
+        if (getFieldValue(iterator) != 9)
+        {
+            return Step::CHANGE;
+        }
+        return Step::BACK;
+    }
+    //stepSolve_prevNeedToChange = false;
     if (!fieldValidation(iterator))
     {
         if (getFieldValue(iterator) != 9)
@@ -643,11 +652,11 @@ Step MainWindow::getNextStep()
 
 bool MainWindow::doStep()
 {
-    if (stepSolve_prevNextToChange)
-    {
-        stepSolve_prevNextToChange = false;
-        return Step::CHANGE;
-    }
+//    if (stepSolve_prevNextToChange)
+//    {
+//        stepSolve_prevNextToChange = false;
+//        return Step::CHANGE;
+//    }
     Step step = getNextStep();
     switch (step)
     {
@@ -655,6 +664,8 @@ bool MainWindow::doStep()
     {
         if (actualGrid[iterator.y][iterator.x] < 9)
         {
+            stepSolve_prevNeedToChange = false;
+            qDebug() << stepSolve_prevNeedToChange;
             actualGrid[iterator.y][iterator.x]++;
             return true;
         }
@@ -671,9 +682,11 @@ bool MainWindow::doStep()
     case Step::BACK:
     {
         actualGrid[iterator.y][iterator.x] = 0;
+        updateField({iterator.y, iterator.x});
         if (back())
         {
-            stepSolve_prevNextToChange = true;
+            stepSolve_prevNeedToChange = true;
+            qDebug() << stepSolve_prevNeedToChange;
             return true;
         }
         return false;
@@ -689,10 +702,12 @@ void MainWindow::solve()
     while (!solved && !error)
     {
         error = !doStep();
+        updateGrid(actualGrid);
         if (iterator.x == 8 && iterator.y == 8)
         {
             solved = gridValidation();
         }
+
     }
     setFieldsEnabled(true);
 }

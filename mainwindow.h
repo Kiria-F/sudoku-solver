@@ -38,7 +38,7 @@ class MainWindow : public QMainWindow
 
     bool stepSolve_solved = false;
     bool stepSolve_error = false;
-    bool stepSolve_prevNextToChange = false;
+    bool stepSolve_prevNeedToChange = false;
 
 public:
     MainWindow(QWidget *parent = nullptr);
