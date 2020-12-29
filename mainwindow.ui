@@ -2120,6 +2120,13 @@
      </layout>
     </item>
     <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QFrame" name="frame_Debug">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
