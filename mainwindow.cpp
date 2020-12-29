@@ -449,14 +449,14 @@ int MainWindow::getFieldValue(CoordsOfField cof)
 }
 
 bool MainWindow::fieldValidation(CoordsOfField cof) {
+    if(actualGrid[cof.y][cof.x] == 0) return false;
     int xs = cof.x/3; xs *= 3;
     int ys = cof.x/3; ys *= 3;
 
-    for(int i = 0; i <= 2; i++) {
-        for(int j = 0; j <= 2; j++) {
-            if (xs+j != cof.x && ys+i != cof.y) {
-                if (actualGrid[cof.y][cof.x] == actualGrid[ys+i][xs+j])
-                {
+    for(int y = 0; y <= 2; y++) {
+        for(int x = 0; x <= 2; x++) {
+            if (xs+x != cof.x && ys+y != cof.y) {
+                if (actualGrid[cof.y][cof.x] == actualGrid[ys+y][xs+x]) {
                     return false;
                 }
             }
@@ -465,14 +465,12 @@ bool MainWindow::fieldValidation(CoordsOfField cof) {
 
     for (int i = 0; i < 9; i++) {
         if (i != cof.x) {
-            if (actualGrid[cof.y][i] == actualGrid[cof.x][cof.y])
-            {
+            if (actualGrid[cof.y][i] == actualGrid[cof.y][cof.x]) {
                 return false;
             }
         }
         if (i != cof.y) {
-            if (actualGrid[i][cof.x] == actualGrid[cof.x][cof.y])
-            {
+            if (actualGrid[i][cof.x] == actualGrid[cof.y][cof.x]) {
                 return false;
             }
         }
