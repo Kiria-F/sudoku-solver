@@ -602,21 +602,27 @@ void MainWindow::on_pushButton_DebugArray_clicked()
 
 bool MainWindow::next()
 {
-    if(iterator.x < 8) iterator.x++;
+    if(iterator.x < 8) {
+        iterator.x++;
+        return true;
+    }
     if(iterator.x == 8) {
         iterator.y++; iterator.x = 0;
+        return true;
     }
-    return true;
     if (iterator.x == 8 && iterator.y == 8) return false;
 }
 
 bool MainWindow::back()
 {
-    if(iterator.x > 0) iterator.x--;
+    if(iterator.x > 0) {
+        iterator.x--;
+        return true;
+    }
     if(iterator.x == 0) {
         iterator.y--; iterator.x = 8;
+        return true;
     }
-    return true;
     if (iterator.x == 0 && iterator.y == 0) return false;
 }
 
