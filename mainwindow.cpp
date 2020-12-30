@@ -587,14 +587,15 @@ void MainWindow::on_pushButton_Set_clicked()
     loadToActualGridFromMemoryGrid();
 }
 
-void MainWindow::on_pushButton_DebugArray_clicked()
+void MainWindow::on_pushButton_Debug_clicked()
 {
     for (int x = 0; x < 9; x++)
     {
         QString debugString = " ";
         for (int y = 0; y < 9; y++)
         {
-            debugString.append(QString::number(actualGrid[x][y])).append(' ');
+            //debugString.append(QString::number(actualGrid[x][y])).append(' ');
+            debugString.append(QString::number(findSolvesCount({x, y}))).append(' ');
         }
         qDebug() << debugString;
     }
@@ -710,7 +711,7 @@ void MainWindow::solve()
     setFieldsEnabled(true);
 }
 
-void MainWindow::stepSolve()
+void MainWindow::stepSolve_OLD()
 {
     stepSolve_error = !doStep();
     ui->lineEdit_Y->setText(QString::number(iterator.y));
@@ -722,17 +723,32 @@ void MainWindow::stepSolve()
     }
 }
 
-int MainWindow::findSolvesCount(CoordsOfField cof)
+void MainWindow::stepSolve()
 {
-    bool solves[9] = {true, true, true, true, true, true, true, true, true};
-    int ys = cof.y/3; ys *= 3;
+    fillSimpleFields();
+    updateGrid(actualGrid);
+}
+
+QStaticArrayData<bool, 9>* MainWindow::findFieldSolves(CoordsOfField cof)
+{
+    QStaticArrayData<bool, 9>* solves = new QStaticArrayData<bool, 9>;
+    bool clear = !actualGrid[cof.x][cof.y];
+    for (int i = 0; i < 9; i++)
+    {
+        solves->data[i] = clear;
+    }
+    if (!clear)
+    {
+        return solves;
+    }
     int xs = cof.x/3; xs *= 3;
-    for(int x = 0; x <= 2; x++) {
-        for(int y = 0; y <= 2; y++) {
+    int ys = cof.y/3; ys *= 3;
+    for(int x = xs; x <= xs + 2; x++) {
+        for(int y = ys; y <= ys + 2; y++) {
             int value = actualGrid[x][y];
-            if (value != 0 && (ys+y != cof.y || xs+x != cof.x)) {
-                if (actualGrid[cof.x][cof.y] == actualGrid[xs+x][ys+y]) {
-                    solves[value] = false;
+            if (value != 0 && (y != cof.y || x != cof.x)) {
+                if (solves->data[value - 1]) {
+                    solves->data[value - 1] = false;
                 }
             }
         }
@@ -740,18 +756,37 @@ int MainWindow::findSolvesCount(CoordsOfField cof)
     for (int i = 0; i < 9; i++)
     {
         int value = actualGrid[cof.x][i];
-        if (value != 0 && solves[value] && i != cof.y)
+        if (value != 0)
         {
-            solves[value] = false;
+            if (solves->data[value - 1])
+            {
+                solves->data[value - 1] = false;
+            }
         }
         value = actualGrid[i][cof.y];
-        if (value != 0 && solves[value] && i != cof.x)
+        if (value != 0)
         {
-            solves[value] = false;
+            if (solves->data[value - 1])
+            {
+                solves->data[value - 1] = false;
+            }
         }
     }
+    return solves;
+}
+
+int MainWindow::findSolvesCount(CoordsOfField cof)
+{
+    QStaticArrayData<bool, 9>* solves = findFieldSolves(cof);
+    int count = findSolvesCount(solves);
+    delete solves;
+    return count;
+}
+
+int MainWindow::findSolvesCount(QStaticArrayData<bool, 9> *solves)
+{
     int count = 0;
-    for (bool solve : solves)
+    for (bool solve : solves->data)
     {
         if (solve)
         {
@@ -763,5 +798,38 @@ int MainWindow::findSolvesCount(CoordsOfField cof)
 
 QList<CoordsOfField> MainWindow::findSimpleFields()
 {
-    return QList<CoordsOfField>();
+    QList<CoordsOfField> result;
+    for (int x = 0; x < 9; x++)
+    {
+        for (int y = 0; y < 9; y++)
+        {
+            if (findSolvesCount({x, y}) == 1)
+            {
+                result.append({x, y});
+            }
+        }
+    }
+    return result;
+}
+
+void MainWindow::fillSimpleField(CoordsOfField cof)
+{
+    QStaticArrayData<bool, 9>* solves = findFieldSolves(cof);
+    for (int i = 0; i < 9; i++)
+    {
+        if (solves->data[i])
+        {
+            actualGrid[cof.x][cof.y] = i + 1;
+        }
+    }
+    delete solves;
+}
+
+void MainWindow::fillSimpleFields()
+{
+    QList<CoordsOfField> simpleFields = findSimpleFields();
+    for (CoordsOfField simpleField : simpleFields)
+    {
+        fillSimpleField(simpleField);
+    }
 }

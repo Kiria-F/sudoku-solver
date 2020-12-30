@@ -2158,9 +2158,9 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_DebugArray">
+          <widget class="QPushButton" name="pushButton_Debug">
            <property name="text">
-            <string>Debug Array</string>
+            <string>Debug</string>
            </property>
           </widget>
          </item>

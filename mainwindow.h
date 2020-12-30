@@ -58,9 +58,14 @@ public:
     Step getNextStep();
     bool doStep();
     void solve();
+    void stepSolve_OLD();
     void stepSolve();
+    QStaticArrayData<bool, 9>* findFieldSolves(CoordsOfField cof);
     int findSolvesCount(CoordsOfField cof);
+    int findSolvesCount(QStaticArrayData<bool, 9>* solves);
     QList<CoordsOfField> findSimpleFields();
+    void fillSimpleField(CoordsOfField cof);
+    void fillSimpleFields();
 
 private slots:
 
@@ -69,7 +74,7 @@ private slots:
     void on_pushButton_Restore_clicked();
     void on_pushButton_Step_clicked();
     void on_pushButton_Set_clicked();
-    void on_pushButton_DebugArray_clicked();
+    void on_pushButton_Debug_clicked();
 
 private:
     Ui::MainWindow *ui;
