@@ -653,11 +653,6 @@ Step MainWindow::getNextStep()
 
 bool MainWindow::doStep()
 {
-//    if (stepSolve_prevNextToChange)
-//    {
-//        stepSolve_prevNextToChange = false;
-//        return Step::CHANGE;
-//    }
     Step step = getNextStep();
     switch (step)
     {
@@ -666,7 +661,6 @@ bool MainWindow::doStep()
         if (actualGrid[iterator.y][iterator.x] < 9)
         {
             stepSolve_prevNeedToChange = false;
-            //qDebug() << stepSolve_prevNeedToChange;
             actualGrid[iterator.y][iterator.x]++;
             return true;
         }
@@ -687,7 +681,6 @@ bool MainWindow::doStep()
         if (back())
         {
             stepSolve_prevNeedToChange = true;
-            //qDebug() << stepSolve_prevNeedToChange;
             return true;
         }
         return false;
@@ -712,7 +705,6 @@ void MainWindow::solve()
         {
             solved = gridValidation();
         }
-        //QThread::msleep(1);
     }
     setFieldsEnabled(true);
 }
@@ -727,4 +719,48 @@ void MainWindow::stepSolve()
     {
         stepSolve_solved = gridValidation();
     }
+}
+
+int MainWindow::findSolvesCount(CoordsOfField cof)
+{
+    bool solves[9] = {true, true, true, true, true, true, true, true, true};
+    int xs = cof.x/3; xs *= 3;
+    int ys = cof.y/3; ys *= 3;
+    for(int y = 0; y <= 2; y++) {
+        for(int x = 0; x <= 2; x++) {
+            int value = actualGrid[y][x];
+            if (value != 0 && (xs+x != cof.x || ys+y != cof.y)) {
+                if (actualGrid[cof.y][cof.x] == actualGrid[ys+y][xs+x]) {
+                    solves[value] = false;
+                }
+            }
+        }
+    }
+    for (int i = 0; i < 9; i++)
+    {
+        int value = actualGrid[cof.y][i];
+        if (value != 0 && solves[value] && i != cof.x)
+        {
+            solves[value] = false;
+        }
+        value = actualGrid[i][cof.x];
+        if (value != 0 && solves[value] && i != cof.y)
+        {
+            solves[value] = false;
+        }
+    }
+    int count = 0;
+    for (bool solve : solves)
+    {
+        if (solve)
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
+QList<CoordsOfField> MainWindow::findSimpleFields()
+{
+    return QList<CoordsOfField>();
 }

@@ -59,6 +59,8 @@ public:
     bool doStep();
     void solve();
     void stepSolve();
+    int findSolvesCount(CoordsOfField cof);
+    QList<CoordsOfField> findSimpleFields();
 
 private slots:
 
