@@ -57,12 +57,14 @@ public:
     bool back();
     Step getNextStep();
     bool doStep();
+    void solve_OLD();
     void solve();
     void stepSolve_OLD();
     void stepSolve();
     QStaticArrayData<bool, 9>* findFieldSolves(CoordsOfField cof);
     int findSolvesCount(CoordsOfField cof);
     int findSolvesCount(QStaticArrayData<bool, 9>* solves);
+
     QList<CoordsOfField> findSimpleFields();
     void fillSimpleField(CoordsOfField cof);
     void fillSimpleFields();

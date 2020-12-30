@@ -13,8 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     {
         for (int y = 0; y < 9; y++)
         {
-            CoordsOfField cf{x, y};
-            QLineEdit* field = getField(cf);
+            QLineEdit* field = getField({x, y});
             field->setAlignment(Qt::AlignCenter);
             field->setMaxLength(1);
             memoryGrid[x][y] = 0;
@@ -690,7 +689,7 @@ bool MainWindow::doStep()
     return false;
 }
 
-void MainWindow::solve()
+void MainWindow::solve_OLD()
 {
     bool solved = false;
     bool error = false;
@@ -709,6 +708,11 @@ void MainWindow::solve()
         }
     }
     setFieldsEnabled(true);
+}
+
+void MainWindow::solve()
+{
+
 }
 
 void MainWindow::stepSolve_OLD()
