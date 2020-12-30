@@ -9,16 +9,16 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->setFixedSize(this->minimumSize());
-    for (int y = 0; y < 9; y++)
+    for (int x = 0; x < 9; x++)
     {
-        for (int x = 0; x < 9; x++)
+        for (int y = 0; y < 9; y++)
         {
-            CoordsOfField cf{y, x};
+            CoordsOfField cf{x, y};
             QLineEdit* field = getField(cf);
             field->setAlignment(Qt::AlignCenter);
             field->setMaxLength(1);
-            memoryGrid[y][x] = 0;
-            actualGrid[y][x] = 0;
+            memoryGrid[x][y] = 0;
+            actualGrid[x][y] = 0;
         }
     }
 }
@@ -30,11 +30,11 @@ MainWindow::~MainWindow()
 
 QLineEdit* MainWindow::getField(CoordsOfField cof)
 {
-    switch (cof.y)
+    switch (cof.x)
     {
     case 0:
     {
-        switch (cof.x)
+        switch (cof.y)
         {
         case 0:
         {
@@ -78,7 +78,7 @@ QLineEdit* MainWindow::getField(CoordsOfField cof)
     }
     case 1:
     {
-        switch (cof.x)
+        switch (cof.y)
         {
         case 0:
         {
@@ -122,7 +122,7 @@ QLineEdit* MainWindow::getField(CoordsOfField cof)
     }
     case 2:
     {
-        switch (cof.x)
+        switch (cof.y)
         {
         case 0:
         {
@@ -166,7 +166,7 @@ QLineEdit* MainWindow::getField(CoordsOfField cof)
     }
     case 3:
     {
-        switch (cof.x)
+        switch (cof.y)
         {
         case 0:
         {
@@ -210,7 +210,7 @@ QLineEdit* MainWindow::getField(CoordsOfField cof)
     }
     case 4:
     {
-        switch (cof.x)
+        switch (cof.y)
         {
         case 0:
         {
@@ -254,7 +254,7 @@ QLineEdit* MainWindow::getField(CoordsOfField cof)
     }
     case 5:
     {
-        switch (cof.x)
+        switch (cof.y)
         {
         case 0:
         {
@@ -298,7 +298,7 @@ QLineEdit* MainWindow::getField(CoordsOfField cof)
     }
     case 6:
     {
-        switch (cof.x)
+        switch (cof.y)
         {
         case 0:
         {
@@ -342,7 +342,7 @@ QLineEdit* MainWindow::getField(CoordsOfField cof)
     }
     case 7:
     {
-        switch (cof.x)
+        switch (cof.y)
         {
         case 0:
         {
@@ -386,7 +386,7 @@ QLineEdit* MainWindow::getField(CoordsOfField cof)
     }
     case 8:
     {
-        switch (cof.x)
+        switch (cof.y)
         {
         case 0:
         {
@@ -450,14 +450,14 @@ int MainWindow::getFieldValue(CoordsOfField cof)
 }
 
 bool MainWindow::fieldValidation(CoordsOfField cof) {
-    if(actualGrid[cof.y][cof.x] == 0) return false;
-    int xs = cof.x/3; xs *= 3;
+    if(actualGrid[cof.x][cof.y] == 0) return false;
     int ys = cof.y/3; ys *= 3;
+    int xs = cof.x/3; xs *= 3;
 
-    for(int y = 0; y <= 2; y++) {
-        for(int x = 0; x <= 2; x++) {
-            if (xs+x != cof.x || ys+y != cof.y) {
-                if (actualGrid[cof.y][cof.x] == actualGrid[ys+y][xs+x]) {
+    for(int x = 0; x <= 2; x++) {
+        for(int y = 0; y <= 2; y++) {
+            if (ys+y != cof.y || xs+x != cof.x) {
+                if (actualGrid[cof.x][cof.y] == actualGrid[xs+x][ys+y]) {
                     return false;
                 }
             }
@@ -465,13 +465,13 @@ bool MainWindow::fieldValidation(CoordsOfField cof) {
     }
 
     for (int i = 0; i < 9; i++) {
-        if (i != cof.x) {
-            if (actualGrid[cof.y][i] == actualGrid[cof.y][cof.x]) {
+        if (i != cof.y) {
+            if (actualGrid[cof.x][i] == actualGrid[cof.x][cof.y]) {
                 return false;
             }
         }
-        if (i != cof.y) {
-            if (actualGrid[i][cof.x] == actualGrid[cof.y][cof.x]) {
+        if (i != cof.x) {
+            if (actualGrid[i][cof.y] == actualGrid[cof.x][cof.y]) {
                 return false;
             }
         }
@@ -481,11 +481,11 @@ bool MainWindow::fieldValidation(CoordsOfField cof) {
 
 bool MainWindow::gridValidation()
 {
-    for (int y = 0; y < 9; y++)
+    for (int x = 0; x < 9; x++)
     {
-        for (int x = 0 ; x < 9; x++)
+        for (int y = 0 ; y < 9; y++)
         {
-            if (!fieldValidation({y, x}))
+            if (!fieldValidation({x, y}))
             {
                 return false;
             }
@@ -496,58 +496,58 @@ bool MainWindow::gridValidation()
 
 void MainWindow::loadToMemoryGridFromUI()
 {
-    for (int y = 0; y < 9; y++)
+    for (int x = 0; x < 9; x++)
     {
-        for (int x = 0; x < 9; x++)
+        for (int y = 0; y < 9; y++)
         {
-            CoordsOfField cf{y, x};
-            memoryGrid[y][x] = getFieldValue(cf);
+            CoordsOfField cf{x, y};
+            memoryGrid[x][y] = getFieldValue(cf);
         }
     }
 }
 
 void MainWindow::loadToActualGridFromMemoryGrid()
 {
-    for (int y = 0; y < 9; y++)
+    for (int x = 0; x < 9; x++)
     {
-        for (int x = 0; x < 9; x++)
+        for (int y = 0; y < 9; y++)
         {
-            actualGrid[y][x] = memoryGrid[y][x];
+            actualGrid[x][y] = memoryGrid[x][y];
         }
     }
 }
 
 void MainWindow::updateField(CoordsOfField cof)
 {
-    setFieldValue(cof, actualGrid[cof.y][cof.x]);
+    setFieldValue(cof, actualGrid[cof.x][cof.y]);
 }
 
 void MainWindow::updateGrid(int grid[9][9])
 {
-    for (int y = 0; y < 9; y++)
+    for (int x = 0; x < 9; x++)
     {
-        for (int x = 0; x < 9; x++)
+        for (int y = 0; y < 9; y++)
         {
-            CoordsOfField cf{y,x};
-            setFieldValue(cf, grid[cf.y][cf.x]);
+            CoordsOfField cf{x,y};
+            setFieldValue(cf, grid[cf.x][cf.y]);
         }
     }
 }
 
 void MainWindow::setFieldsEnabled(bool enable)
 {
-    for (int y = 0; y < 9; y++)
+    for (int x = 0; x < 9; x++)
     {
-        for (int x = 0; x < 9; x++)
+        for (int y = 0; y < 9; y++)
         {
-            getField({y, x})->setEnabled(enable);
+            getField({x, y})->setEnabled(enable);
         }
     }
 }
 
 void MainWindow::on_pushButton_Load_clicked()
 {
-    int example[9][9] = {
+    int eyample[9][9] = {
         {6, 3, 0,  7, 8, 0,  0, 5, 0},
         {8, 5, 0,  0, 1, 4,  0, 0, 0},
         {0, 7, 1,  0, 9, 6,  0, 4, 8},
@@ -561,7 +561,7 @@ void MainWindow::on_pushButton_Load_clicked()
         {4, 2, 7,  0, 5, 1,  0, 3, 0}
 
     };
-    updateGrid(example);
+    updateGrid(eyample);
 }
 
 void MainWindow::on_pushButton_Solve_clicked()
@@ -589,12 +589,12 @@ void MainWindow::on_pushButton_Set_clicked()
 
 void MainWindow::on_pushButton_DebugArray_clicked()
 {
-    for (int y = 0; y < 9; y++)
+    for (int x = 0; x < 9; x++)
     {
         QString debugString = " ";
-        for (int x = 0; x < 9; x++)
+        for (int y = 0; y < 9; y++)
         {
-            debugString.append(QString::number(actualGrid[y][x])).append(' ');
+            debugString.append(QString::number(actualGrid[x][y])).append(' ');
         }
         qDebug() << debugString;
     }
@@ -603,13 +603,13 @@ void MainWindow::on_pushButton_DebugArray_clicked()
 
 bool MainWindow::next()
 {
-    if (iterator.x == 8 && iterator.y == 8) return false;
-    if(iterator.x < 8) {
-        iterator.x++;
+    if (iterator.y == 8 && iterator.x == 8) return false;
+    if(iterator.y < 8) {
+        iterator.y++;
         return true;
     }
-    if(iterator.x == 8) {
-        iterator.y++; iterator.x = 0;
+    if(iterator.y == 8) {
+        iterator.x++; iterator.y = 0;
         return true;
     }
     return false;
@@ -617,13 +617,13 @@ bool MainWindow::next()
 
 bool MainWindow::back()
 {
-    if (iterator.x == 0 && iterator.y == 0) return false;
-    if(iterator.x > 0) {
-        iterator.x--;
+    if (iterator.y == 0 && iterator.x == 0) return false;
+    if(iterator.y > 0) {
+        iterator.y--;
         return true;
     }
-    if(iterator.x == 0) {
-        iterator.y--; iterator.x = 8;
+    if(iterator.y == 0) {
+        iterator.x--; iterator.y = 8;
         return true;
     }
     return false;
@@ -658,10 +658,10 @@ bool MainWindow::doStep()
     {
     case Step::CHANGE:
     {
-        if (actualGrid[iterator.y][iterator.x] < 9)
+        if (actualGrid[iterator.x][iterator.y] < 9)
         {
             stepSolve_prevNeedToChange = false;
-            actualGrid[iterator.y][iterator.x]++;
+            actualGrid[iterator.x][iterator.y]++;
             return true;
         }
         return false;
@@ -676,8 +676,8 @@ bool MainWindow::doStep()
     }
     case Step::BACK:
     {
-        actualGrid[iterator.y][iterator.x] = 0;
-        updateField({iterator.y, iterator.x});
+        actualGrid[iterator.x][iterator.y] = 0;
+        updateField({iterator.x, iterator.y});
         if (back())
         {
             stepSolve_prevNeedToChange = true;
@@ -686,6 +686,7 @@ bool MainWindow::doStep()
         return false;
     }
     }
+    return false;
 }
 
 void MainWindow::solve()
@@ -697,11 +698,11 @@ void MainWindow::solve()
     {
         error = !doStep();
         //updateGrid(actualGrid);
-        ui->lineEdit_X->setText(QString::number(iterator.x));
         ui->lineEdit_Y->setText(QString::number(iterator.y));
+        ui->lineEdit_X->setText(QString::number(iterator.x));
         updateField(iterator);
         QCoreApplication::processEvents();
-        if (iterator.x == 8 && iterator.y == 8)
+        if (iterator.y == 8 && iterator.x == 8)
         {
             solved = gridValidation();
         }
@@ -712,10 +713,10 @@ void MainWindow::solve()
 void MainWindow::stepSolve()
 {
     stepSolve_error = !doStep();
-    ui->lineEdit_X->setText(QString::number(iterator.x));
     ui->lineEdit_Y->setText(QString::number(iterator.y));
+    ui->lineEdit_X->setText(QString::number(iterator.x));
     updateField(iterator);
-    if (iterator.x == 8 && iterator.y == 8)
+    if (iterator.y == 8 && iterator.x == 8)
     {
         stepSolve_solved = gridValidation();
     }
@@ -724,13 +725,13 @@ void MainWindow::stepSolve()
 int MainWindow::findSolvesCount(CoordsOfField cof)
 {
     bool solves[9] = {true, true, true, true, true, true, true, true, true};
-    int xs = cof.x/3; xs *= 3;
     int ys = cof.y/3; ys *= 3;
-    for(int y = 0; y <= 2; y++) {
-        for(int x = 0; x <= 2; x++) {
-            int value = actualGrid[y][x];
-            if (value != 0 && (xs+x != cof.x || ys+y != cof.y)) {
-                if (actualGrid[cof.y][cof.x] == actualGrid[ys+y][xs+x]) {
+    int xs = cof.x/3; xs *= 3;
+    for(int x = 0; x <= 2; x++) {
+        for(int y = 0; y <= 2; y++) {
+            int value = actualGrid[x][y];
+            if (value != 0 && (ys+y != cof.y || xs+x != cof.x)) {
+                if (actualGrid[cof.x][cof.y] == actualGrid[xs+x][ys+y]) {
                     solves[value] = false;
                 }
             }
@@ -738,13 +739,13 @@ int MainWindow::findSolvesCount(CoordsOfField cof)
     }
     for (int i = 0; i < 9; i++)
     {
-        int value = actualGrid[cof.y][i];
-        if (value != 0 && solves[value] && i != cof.x)
+        int value = actualGrid[cof.x][i];
+        if (value != 0 && solves[value] && i != cof.y)
         {
             solves[value] = false;
         }
-        value = actualGrid[i][cof.x];
-        if (value != 0 && solves[value] && i != cof.y)
+        value = actualGrid[i][cof.y];
+        if (value != 0 && solves[value] && i != cof.x)
         {
             solves[value] = false;
         }

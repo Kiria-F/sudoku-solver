@@ -20,8 +20,8 @@ enum Result
 
 struct CoordsOfField
 {
-    int y;
     int x;
+    int y;
 };
 
 QT_BEGIN_NAMESPACE
