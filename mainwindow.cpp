@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->setFixedSize(this->minimumSize());
+    root = nullptr;
+    allocateGridMemory(memoryGrid);
     for (int x = 0; x < 9; x++)
     {
         for (int y = 0; y < 9; y++)
@@ -17,7 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
             field->setAlignment(Qt::AlignCenter);
             field->setMaxLength(1);
             memoryGrid[x][y] = 0;
-            actualGrid[x][y] = 0;
         }
     }
 }
@@ -25,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    freeGridMemory(memoryGrid);
+    delete root;
 }
 
 QLineEdit* MainWindow::getField(CoordsOfField cof)
@@ -448,15 +451,15 @@ int MainWindow::getFieldValue(CoordsOfField cof)
     return getField(cof)->text().toInt();
 }
 
-bool MainWindow::fieldValidation(CoordsOfField cof) {
-    if(actualGrid[cof.x][cof.y] == 0) return false;
+bool MainWindow::fieldValidation(int** grid, CoordsOfField cof) {
+    if(grid[cof.x][cof.y] == 0) return false;
     int ys = cof.y/3; ys *= 3;
     int xs = cof.x/3; xs *= 3;
 
     for(int x = 0; x <= 2; x++) {
         for(int y = 0; y <= 2; y++) {
             if (ys+y != cof.y || xs+x != cof.x) {
-                if (actualGrid[cof.x][cof.y] == actualGrid[xs+x][ys+y]) {
+                if (grid[cof.x][cof.y] == grid[xs+x][ys+y]) {
                     return false;
                 }
             }
@@ -465,12 +468,12 @@ bool MainWindow::fieldValidation(CoordsOfField cof) {
 
     for (int i = 0; i < 9; i++) {
         if (i != cof.y) {
-            if (actualGrid[cof.x][i] == actualGrid[cof.x][cof.y]) {
+            if (grid[cof.x][i] == grid[cof.x][cof.y]) {
                 return false;
             }
         }
         if (i != cof.x) {
-            if (actualGrid[i][cof.y] == actualGrid[cof.x][cof.y]) {
+            if (grid[i][cof.y] == grid[cof.x][cof.y]) {
                 return false;
             }
         }
@@ -478,13 +481,13 @@ bool MainWindow::fieldValidation(CoordsOfField cof) {
     return true;
 }
 
-bool MainWindow::gridValidation()
+bool MainWindow::gridValidation(int** grid)
 {
     for (int x = 0; x < 9; x++)
     {
         for (int y = 0 ; y < 9; y++)
         {
-            if (!fieldValidation({x, y}))
+            if (!fieldValidation(grid, {x, y}))
             {
                 return false;
             }
@@ -495,6 +498,10 @@ bool MainWindow::gridValidation()
 
 void MainWindow::loadToMemoryGridFromUI()
 {
+    if (!memoryGrid)
+    {
+        allocateGridMemory(memoryGrid);
+    }
     for (int x = 0; x < 9; x++)
     {
         for (int y = 0; y < 9; y++)
@@ -505,30 +512,54 @@ void MainWindow::loadToMemoryGridFromUI()
     }
 }
 
-void MainWindow::loadToActualGridFromMemoryGrid()
+int** MainWindow::getGrigFromUI()
 {
+    int** grid;
+    allocateGridMemory(grid);
     for (int x = 0; x < 9; x++)
     {
         for (int y = 0; y < 9; y++)
         {
-            actualGrid[x][y] = memoryGrid[x][y];
+            grid[x][y] = getFieldValue({x, y});
         }
+    }
+    return grid;
+}
+
+void MainWindow::debugGrid(int **grid)
+{
+    for (int x = 0; x < 9; x++)
+    {
+        QString debugString = " ";
+        for (int y = 0; y < 9; y++)
+        {
+            debugString.append(QString::number(grid[x][y])).append(' ');
+        }
+        qDebug() << debugString;
+    }
+    qDebug() << "\n\n";
+}
+
+void MainWindow::loadToRootFromMemoryGrid()
+{
+    if (!root)
+    {
+        root = new Tree(cloneGrid(memoryGrid));
     }
 }
 
-void MainWindow::updateField(CoordsOfField cof)
-{
-    setFieldValue(cof, actualGrid[cof.x][cof.y]);
-}
+//void MainWindow::updateField(int** grid, CoordsOfField cof)
+//{
+//    setFieldValue(cof, grid[cof.x][cof.y]);
+//}
 
-void MainWindow::updateGrid(int grid[9][9])
+void MainWindow::updateGrid(int** grid)
 {
     for (int x = 0; x < 9; x++)
     {
         for (int y = 0; y < 9; y++)
         {
-            CoordsOfField cf{x,y};
-            setFieldValue(cf, grid[cf.x][cf.y]);
+            setFieldValue({x, y}, grid[x][y]);
         }
     }
 }
@@ -546,7 +577,7 @@ void MainWindow::setFieldsEnabled(bool enable)
 
 void MainWindow::on_pushButton_Load_clicked()
 {
-    int eyample[9][9] = {
+    int easyExample[9][9] = {
         {6, 3, 0,  7, 8, 0,  0, 5, 0},
         {8, 5, 0,  0, 1, 4,  0, 0, 0},
         {0, 7, 1,  0, 9, 6,  0, 4, 8},
@@ -560,13 +591,40 @@ void MainWindow::on_pushButton_Load_clicked()
         {4, 2, 7,  0, 5, 1,  0, 3, 0}
 
     };
-    updateGrid(eyample);
+
+    int hardExample[9][9] = {
+        {6, 3, 0,  7, 8, 0,  0, 5, 0},
+        {8, 5, 0,  0, 0, 4,  0, 0, 0},
+        {0, 7, 0,  0, 0, 6,  0, 4, 8},
+
+        {9, 0, 0,  0, 7, 0,  2, 0, 5},
+        {7, 8, 2,  4, 6, 0,  0, 0, 0},
+        {0, 0, 5,  0, 0, 0,  0, 7, 4},
+
+        {0, 0, 3,  2, 0, 8,  5, 6, 0},
+        {5, 0, 0,  9, 0, 7,  4, 0, 2},
+        {0, 2, 7,  0, 5, 0,  0, 0, 0}
+    };
+
+    int** buffer = new int*[9];
+    for (int i = 0; i < 9; i++)
+    {
+        buffer[i] = new int[9];
+    }
+    for (int x = 0; x < 9; x++)
+    {
+        for (int y = 0; y < 9; y++)
+        {
+            buffer[x][y] = hardExample[x][y];
+        }
+    }
+    updateGrid(buffer);
 }
 
 void MainWindow::on_pushButton_Solve_clicked()
 {
     loadToMemoryGridFromUI();
-    loadToActualGridFromMemoryGrid();
+    loadToRootFromMemoryGrid();
     solve();
 }
 
@@ -583,163 +641,33 @@ void MainWindow::on_pushButton_Step_clicked()
 void MainWindow::on_pushButton_Set_clicked()
 {
     loadToMemoryGridFromUI();
-    loadToActualGridFromMemoryGrid();
+    loadToRootFromMemoryGrid();
 }
 
 void MainWindow::on_pushButton_Debug_clicked()
 {
+    int** buffer = getGrigFromUI();
     for (int x = 0; x < 9; x++)
     {
         QString debugString = " ";
         for (int y = 0; y < 9; y++)
         {
-            //debugString.append(QString::number(actualGrid[x][y])).append(' ');
-            debugString.append(QString::number(findSolvesCount({x, y}))).append(' ');
+            //debugString.append(QString::number(grid[x][y])).append(' ');
+            debugString.append(QString::number(findFieldSolvesCount(buffer, {x, y}))).append(' ');
         }
         qDebug() << debugString;
     }
     qDebug() << "\n\n";
+    freeGridMemory(buffer);
 }
 
-bool MainWindow::next()
+bool* MainWindow::findFieldSolves(int** grid, CoordsOfField cof)
 {
-    if (iterator.y == 8 && iterator.x == 8) return false;
-    if(iterator.y < 8) {
-        iterator.y++;
-        return true;
-    }
-    if(iterator.y == 8) {
-        iterator.x++; iterator.y = 0;
-        return true;
-    }
-    return false;
-}
-
-bool MainWindow::back()
-{
-    if (iterator.y == 0 && iterator.x == 0) return false;
-    if(iterator.y > 0) {
-        iterator.y--;
-        return true;
-    }
-    if(iterator.y == 0) {
-        iterator.x--; iterator.y = 8;
-        return true;
-    }
-    return false;
-}
-
-Step MainWindow::getNextStep()
-{
-    if (stepSolve_prevNeedToChange)
-    {
-        if (getFieldValue(iterator) != 9)
-        {
-            return Step::CHANGE;
-        }
-        return Step::BACK;
-    }
-    //stepSolve_prevNeedToChange = false;
-    if (!fieldValidation(iterator))
-    {
-        if (getFieldValue(iterator) != 9)
-        {
-            return Step::CHANGE;
-        }
-        return Step::BACK;
-    }
-    return Step::NEXT;
-}
-
-bool MainWindow::doStep()
-{
-    Step step = getNextStep();
-    switch (step)
-    {
-    case Step::CHANGE:
-    {
-        if (actualGrid[iterator.x][iterator.y] < 9)
-        {
-            stepSolve_prevNeedToChange = false;
-            actualGrid[iterator.x][iterator.y]++;
-            return true;
-        }
-        return false;
-    }
-    case Step::NEXT:
-    {
-        if (next())
-        {
-            return true;
-        }
-        return false;
-    }
-    case Step::BACK:
-    {
-        actualGrid[iterator.x][iterator.y] = 0;
-        updateField({iterator.x, iterator.y});
-        if (back())
-        {
-            stepSolve_prevNeedToChange = true;
-            return true;
-        }
-        return false;
-    }
-    }
-    return false;
-}
-
-void MainWindow::solve_OLD()
-{
-    bool solved = false;
-    bool error = false;
-    setFieldsEnabled(false);
-    while (!solved && !error)
-    {
-        error = !doStep();
-        //updateGrid(actualGrid);
-        ui->lineEdit_Y->setText(QString::number(iterator.y));
-        ui->lineEdit_X->setText(QString::number(iterator.x));
-        updateField(iterator);
-        QCoreApplication::processEvents();
-        if (iterator.y == 8 && iterator.x == 8)
-        {
-            solved = gridValidation();
-        }
-    }
-    setFieldsEnabled(true);
-}
-
-void MainWindow::solve()
-{
-
-}
-
-void MainWindow::stepSolve_OLD()
-{
-    stepSolve_error = !doStep();
-    ui->lineEdit_Y->setText(QString::number(iterator.y));
-    ui->lineEdit_X->setText(QString::number(iterator.x));
-    updateField(iterator);
-    if (iterator.y == 8 && iterator.x == 8)
-    {
-        stepSolve_solved = gridValidation();
-    }
-}
-
-void MainWindow::stepSolve()
-{
-    fillSimpleFields();
-    updateGrid(actualGrid);
-}
-
-QStaticArrayData<bool, 9>* MainWindow::findFieldSolves(CoordsOfField cof)
-{
-    QStaticArrayData<bool, 9>* solves = new QStaticArrayData<bool, 9>;
-    bool clear = !actualGrid[cof.x][cof.y];
+    bool* solves = new bool[9];
+    bool clear = !grid[cof.x][cof.y];
     for (int i = 0; i < 9; i++)
     {
-        solves->data[i] = clear;
+        solves[i] = clear;
     }
     if (!clear)
     {
@@ -749,50 +677,50 @@ QStaticArrayData<bool, 9>* MainWindow::findFieldSolves(CoordsOfField cof)
     int ys = cof.y/3; ys *= 3;
     for(int x = xs; x <= xs + 2; x++) {
         for(int y = ys; y <= ys + 2; y++) {
-            int value = actualGrid[x][y];
+            int value = grid[x][y];
             if (value != 0 && (y != cof.y || x != cof.x)) {
-                if (solves->data[value - 1]) {
-                    solves->data[value - 1] = false;
+                if (solves[value - 1]) {
+                    solves[value - 1] = false;
                 }
             }
         }
     }
     for (int i = 0; i < 9; i++)
     {
-        int value = actualGrid[cof.x][i];
+        int value = grid[cof.x][i];
         if (value != 0)
         {
-            if (solves->data[value - 1])
+            if (solves[value - 1])
             {
-                solves->data[value - 1] = false;
+                solves[value - 1] = false;
             }
         }
-        value = actualGrid[i][cof.y];
+        value = grid[i][cof.y];
         if (value != 0)
         {
-            if (solves->data[value - 1])
+            if (solves[value - 1])
             {
-                solves->data[value - 1] = false;
+                solves[value - 1] = false;
             }
         }
     }
     return solves;
 }
 
-int MainWindow::findSolvesCount(CoordsOfField cof)
+int MainWindow::findFieldSolvesCount(int** grid, CoordsOfField cof)
 {
-    QStaticArrayData<bool, 9>* solves = findFieldSolves(cof);
-    int count = findSolvesCount(solves);
+    bool* solves = findFieldSolves(grid, cof);
+    int count = findFieldSolvesCount(solves);
     delete solves;
     return count;
 }
 
-int MainWindow::findSolvesCount(QStaticArrayData<bool, 9> *solves)
+int MainWindow::findFieldSolvesCount(bool* solves)
 {
     int count = 0;
-    for (bool solve : solves->data)
+    for (int i = 0; i < 9; i++)
     {
-        if (solve)
+        if (solves[i])
         {
             count++;
         }
@@ -800,14 +728,58 @@ int MainWindow::findSolvesCount(QStaticArrayData<bool, 9> *solves)
     return count;
 }
 
-QList<CoordsOfField> MainWindow::findSimpleFields()
+void MainWindow::freeGridMemory(int**& grid)
+{
+    for (int i = 0; i < 9; i++)
+    {
+        delete[] grid[i];
+    }
+    delete[] grid;
+    grid = nullptr;
+}
+
+void MainWindow::allocateGridMemory(int**& grid)
+{
+    grid = new int*[9];
+    for (int i = 0; i < 9; i++)
+    {
+        grid[i] = new int[9];
+    }
+}
+
+int** MainWindow::cloneGrid(int** from)
+{
+    int** clone = nullptr;
+    allocateGridMemory(clone);
+    for (int x = 0; x < 9; x++)
+    {
+        for (int y = 0; y < 9; y++)
+        {
+            clone[x][y] = from[x][y];
+        }
+    }
+    return clone;
+}
+
+void MainWindow::cloneGrid(int** from, int** to)
+{
+    for (int x = 0; x < 9; x++)
+    {
+        for (int y = 0; y < 9; y++)
+        {
+            to[x][y] = from[x][y];
+        }
+    }
+}
+
+QList<CoordsOfField> MainWindow::findSimpleFields(int** grid)
 {
     QList<CoordsOfField> result;
     for (int x = 0; x < 9; x++)
     {
         for (int y = 0; y < 9; y++)
         {
-            if (findSolvesCount({x, y}) == 1)
+            if (findFieldSolvesCount(grid, {x, y}) == 1)
             {
                 result.append({x, y});
             }
@@ -816,24 +788,203 @@ QList<CoordsOfField> MainWindow::findSimpleFields()
     return result;
 }
 
-void MainWindow::fillSimpleField(CoordsOfField cof)
+int MainWindow::findMinimalSolvesCount(int** grid)
 {
-    QStaticArrayData<bool, 9>* solves = findFieldSolves(cof);
+    int minimalSolvesCount = 10;
+    for (int x = 0; x < 9; x++)
+    {
+        for (int y = 0; y < 9; y++)
+        {
+            int solvesCount = findFieldSolvesCount(grid, {x, y});
+            if (solvesCount)
+            {
+                if (solvesCount == 1)
+                {
+                    return solvesCount;
+                }
+                if (solvesCount < minimalSolvesCount)
+                {
+                    minimalSolvesCount = solvesCount;
+                }
+            }
+        }
+    }
+    return minimalSolvesCount;
+}
+
+CoordsOfField MainWindow::findFieldForSolvesCount(int** grid, int solvesCount)
+{
+    for (int x = 0; x < 9; x++)
+    {
+        for (int y = 0; y < 9; y++)
+        {
+            if (findFieldSolvesCount(grid, {x, y}) == solvesCount)
+            {
+                return {x, y};
+            }
+        }
+    }
+    return {10, 10};
+}
+
+CoordsOfField MainWindow::findMinimalSolvesCountField(int** grid)
+{
+    return findFieldForSolvesCount(grid, findMinimalSolvesCount(grid));
+}
+
+int MainWindow::findEmptyFieldsCount(int** grid)
+{
+    int emptyFieldsCount = 0;
+    for (int x = 0; x < 9; x++)
+    {
+        for (int y = 0; y < 9; y++)
+        {
+            if (!grid[x][y])
+            {
+                emptyFieldsCount++;
+            }
+        }
+    }
+    return emptyFieldsCount;
+}
+
+QList<Tree*> MainWindow::getLastGen()
+{
+    QList<Tree*> lastGen;
+    QList<Tree*> buffer;
+    lastGen.append(root);
+    for (int g = 0; g < lastGenIndex; g++)
+    {
+        buffer = lastGen;
+        lastGen.clear();
+        int branchesCount = buffer.size();
+        for (int b = 0; b < branchesCount; b++)
+        {
+            Tree* branch = buffer[b];
+            int childsCount = branch->getChildsCount();
+            for (int c = 0; c < childsCount; c++)
+            {
+                Tree* child = branch->getChild(c);
+                //if (child->isActive())
+                //{
+                lastGen.append(child);
+                //}
+            }
+        }
+    }
+    return lastGen;
+}
+
+Tree* MainWindow::isGenHaveSolvedGrid(QList<Tree*> gen)
+{
+    int size = gen.size();
+    for (int i = 0; i < size; i++)
+    {
+        if (!findEmptyFieldsCount(gen[i]->getData()))
+        {
+            return gen[i];
+        }
+    }
+    return nullptr;
+}
+
+QList<int**> MainWindow::findGridSolves(int **grid)
+{
+    int nextGenChildsCount = findMinimalSolvesCount(grid);
+    QList<int**> gridSolves;
+    if (nextGenChildsCount == 1)
+    {
+        int** nextGenChild = cloneGrid(grid);
+        fillSimpleFields(nextGenChild);
+        gridSolves.append(nextGenChild);
+    }
+    else
+    {
+        CoordsOfField cof = findFieldForSolvesCount(grid, nextGenChildsCount);
+        bool* fieldSolves = findFieldSolves(grid, cof);
+        for (int i = 0; i < 9; i++)
+        {
+            if (fieldSolves[i])
+            {
+                int** nextGenChild = cloneGrid(grid);
+                nextGenChild[cof.x][cof.y] = i + 1;
+                gridSolves.append(nextGenChild);
+            }
+        }
+    }
+    return gridSolves;
+}
+
+void MainWindow::addSolvesListToTree(QList<int **> solves, Tree *tree)
+{
+    int nextGenChildsCount = solves.size();
+    for (int i = 0; i < nextGenChildsCount; i++)
+    {
+        tree->addChild(solves[i]);
+    }
+}
+
+int** MainWindow::getSolvedChildFromGen(QList<Tree *> gen)
+{
+    int count = gen.size();
+    for (int i = 0; i < count; i++)
+    {
+        if (!findEmptyFieldsCount(gen[i]->getData()))
+        {
+            return gen[i]->getData();
+        }
+    }
+    return nullptr;
+}
+
+void MainWindow::fillSimpleField(int** grid, CoordsOfField cof)
+{
+    bool* solves = findFieldSolves(grid, cof);
     for (int i = 0; i < 9; i++)
     {
-        if (solves->data[i])
+        if (solves[i])
         {
-            actualGrid[cof.x][cof.y] = i + 1;
+            grid[cof.x][cof.y] = i + 1;
         }
     }
     delete solves;
 }
 
-void MainWindow::fillSimpleFields()
+void MainWindow::fillSimpleFields(int** grid)
 {
-    QList<CoordsOfField> simpleFields = findSimpleFields();
+    QList<CoordsOfField> simpleFields = findSimpleFields(grid);
     for (CoordsOfField simpleField : simpleFields)
     {
-        fillSimpleField(simpleField);
+        fillSimpleField(grid, simpleField);
     }
+}
+
+void MainWindow::solve()
+{
+    lastGenIndex = 0;
+    while (!isGenHaveSolvedGrid(getLastGen()))
+    {
+        QList<Tree*> lastGen = getLastGen();
+        int childsCount = getLastGen().size();
+        for (int i = 0; i < childsCount; i++)
+        {
+            QList<int**> solves = findGridSolves(lastGen[i]->getData());
+            addSolvesListToTree(solves, lastGen[i]);
+        }
+        lastGenIndex++;
+        for (int i = 0; i < childsCount; i++)
+        {
+            qDebug() << "gen: " << lastGenIndex << endl
+                     << "child num: " << i << endl;
+            debugGrid(getLastGen()[i]->getData());
+        }
+    }
+
+    updateGrid(getSolvedChildFromGen(getLastGen()));
+}
+
+void MainWindow::stepSolve()
+{
+    //fillSimpleFields();
+    //updateGrid(grid);
 }
