@@ -954,6 +954,21 @@ int** MainWindow::getSolvedChildFromGen(QList<Tree *> gen)
     return nullptr;
 }
 
+bool MainWindow::isGridSolvable(int **grid)
+{
+    for (int x = 0; x < 9; x++)
+    {
+        for (int y = 0; y < 9; y++)
+        {
+            if (!findFieldSolvesCount(grid, {x, y}) && !grid[x][y])
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 void MainWindow::fillSimpleField(int** grid, CoordsOfField cof)
 {
     bool* solves = findFieldSolves(grid, cof);
@@ -974,6 +989,89 @@ void MainWindow::fillSimpleFields(int** grid)
     {
         fillSimpleField(grid, simpleField);
     }
+}
+
+fieldExploreResult MainWindow::exploreField(int **grid, CoordsOfField cof)
+{
+    fieldExploreResult result;
+    result.value = grid[cof.x][cof.y];
+
+    bool clear = !grid[cof.x][cof.y];
+    for (int i = 0; i < 9; i++)
+    {
+        result.solves[i] = clear;
+    }
+    if (clear)
+    {
+        result.solvesCount = 9;
+        int xs = cof.x/3; xs *= 3;
+        int ys = cof.y/3; ys *= 3;
+        for(int x = xs; x <= xs + 2; x++) {
+            for(int y = ys; y <= ys + 2; y++)
+            {
+                int value = grid[x][y];
+                if (y != cof.y || x != cof.x)
+                {
+                    if (result.solves[value - 1])
+                    {
+                        result.solves[value - 1] = false;
+                        result.solvesCount--;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < 9; i++)
+        {
+            int value = grid[cof.x][i];
+            if (result.solves[value - 1])
+            {
+                result.solves[value - 1] = false;
+                result.solvesCount--;
+            }
+            value = grid[i][cof.y];
+            if (result.solves[value - 1])
+            {
+                result.solves[value - 1] = false;
+                result.solvesCount--;
+            }
+        }
+    }
+    else
+    {
+        result.solvesCount = 0;
+    }
+
+    return result;
+}
+
+gridExploreResult MainWindow::exploreGrid(int **grid)
+{
+    gridExploreResult result = {false, true, 10, {10, 10}, 0};
+    int minimalSolvesCount = 10;
+    for (int x = 0; x < 9; x++)
+    {
+        for (int y = 0; y < 9; y++)
+        {
+            fieldExploreResult fieldExplore = exploreField(grid, {x, y});
+            if (fieldExplore.value)
+            {
+                if (minimalSolvesCount < fieldExplore.solvesCount)
+                {
+                    minimalSolvesCount = fieldExplore.solvesCount;
+                }
+                if (!fieldExplore.solvesCount)
+                {
+                    result.isSolvable = false;
+                }
+            }
+            else
+            {
+                result.emptyFieldsCount++;
+                result.isSolved = false;
+            }
+        }
+    }
+    return result;
 }
 
 void MainWindow::solve()

@@ -11,6 +11,22 @@ struct CoordsOfField
     int y;
 };
 
+struct fieldExploreResult
+{
+    int value;
+    bool solves[9];
+    int solvesCount;
+};
+
+struct gridExploreResult
+{
+    bool isSolvable;
+    bool isSolved;
+    int minimalSolvesCountFieldsCount;
+    CoordsOfField firstMinimalSolvesCountField;
+    int emptyFieldsCount;
+};
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -39,27 +55,30 @@ public:
 
     void debugGrid(int** grid);  // Отображает сетку в окне дебага
     void loadToRootFromMemoryGrid();  // Загружает сетку в корень из memoryGrid
-    bool fieldValidation(int** grid, CoordsOfField cof);  // Проверяет поле на валидность
-    bool gridValidation(int** grid);  // Проверяет сетку на валидность
-    bool* findFieldSolves(int** grid, CoordsOfField cof);  // Возвращает список допустимых значений поля
-    int findFieldSolvesCount(int** grid, CoordsOfField cof);  // Возвращает кол-во решений сетки
-    int findFieldSolvesCount(bool* solves);  // Возвращает кол-во решений сетки
-    int findMinimalSolvesCount(int** grid);  // Возвращает минимальное кол-во возможных решений полей сетки
-    CoordsOfField findFieldForSolvesCount(int** grid, int solvesCount);  // Возвращает первое поле по его КВР (кол-ву возможных решений)
-    CoordsOfField findMinimalSolvesCountField(int** grid);  // Возвращает первое поле с минимальным кол-вом решений
-    int findEmptyFieldsCount(int** grid);  // Возвращает кол-во пустых полей сетки
+    bool fieldValidation(int** grid, CoordsOfField cof);  // Проверяет поле на валидность [F]
+    bool gridValidation(int** grid);  // Проверяет сетку на валидность [G]
+    bool* findFieldSolves(int** grid, CoordsOfField cof);  // Возвращает список допустимых значений поля [F]
+    int findFieldSolvesCount(int** grid, CoordsOfField cof);  // Возвращает кол-во решений поля [F]
+    int findFieldSolvesCount(bool* solves);  // Возвращает кол-во решений поля [F]
+    int findMinimalSolvesCount(int** grid);  // Возвращает минимальное кол-во возможных решений полей сетки [G]
+    CoordsOfField findFieldForSolvesCount(int** grid, int solvesCount);  // Возвращает первое поле по его КВР (кол-ву возможных решений) [G]
+    CoordsOfField findMinimalSolvesCountField(int** grid);  // Возвращает первое поле с минимальным кол-вом решений [G]
+    int findEmptyFieldsCount(int** grid);  // Возвращает кол-во пустых полей сетки [G]
     QList<Tree*> getLastGen();  // Возвращает список сеток последнего поколения
     Tree* isGenHaveSolvedGrid(QList<Tree*> gen);  // Возвращает решённую сетку поколения, если таковая имеется
     QList<int**> findGridSolves(int** grid);  // Возвращает список следующего поколения решений сетки
     void addSolvesListToTree(QList<int**> solves, Tree* tree);  // Добавляет список решений в дерево
     int** getSolvedChildFromGen(QList<Tree*> gen);  // Возвращает решённую сетку из поколения
+    bool isGridSolvable(int** grid);  // Распознаёт неразрешимую сетку [G]
+    fieldExploreResult exploreField(int** grid, CoordsOfField cof);  // Исследует поле
+    gridExploreResult exploreGrid(int** grid);  // Исследует поле
 
     void freeGridMemory(int**& grid);  // Освобождает память из-под сетки
     void allocateGridMemory(int**& grid);  // Выделяет память под сетку
     int** cloneGrid(int** from); // Клонирует сетку
     void cloneGrid(int** from, int** to);  // Клонирует сетку
 
-    QList<CoordsOfField> findSimpleFields(int** grid);  // Возвращает координаты полей с КВР = 1
+    QList<CoordsOfField> findSimpleFields(int** grid);  // Возвращает координаты полей с КВР = 1 [G]
     void fillSimpleField(int** grid, CoordsOfField cof);  // Заполняет поля сетки с КВР = 1
     void fillSimpleFields(int** grid);  // Заполняет поля сетки с КВР = 1
 
