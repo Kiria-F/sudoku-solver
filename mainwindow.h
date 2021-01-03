@@ -4,19 +4,6 @@
 #include <QMainWindow>
 #include <QLineEdit>
 #include "tree.h"
-enum Step
-{
-    BACK,
-    CHANGE,
-    NEXT
-};
-
-enum Result
-{
-    OK,
-    ERROR,
-    END
-};
 
 struct CoordsOfField
 {
@@ -36,10 +23,6 @@ class MainWindow : public QMainWindow
     Tree* root;
     int lastGenIndex;
 
-    bool stepSolve_solved = false;
-    bool stepSolve_error = false;
-    bool stepSolve_prevNeedToChange = false;
-
 public:
     MainWindow(QWidget *parent = nullptr);  // Конструктор чо
     ~MainWindow();  // Деструктор чо
@@ -52,6 +35,7 @@ public:
     //void updateField(int** grid, CoordsOfField cf);  // Обовляет поле UI
     void updateGrid(int** grid);  // Обновляет сетку UI
     void setFieldsEnabled(bool enable);  // Устанавливает флаг isEnabled у всех полей
+    CoordsOfField getFocusCoords();  // Возвращает координаты поля под фокусом
 
     void debugGrid(int** grid);  // Отображает сетку в окне дебага
     void loadToRootFromMemoryGrid();  // Загружает сетку в корень из memoryGrid
@@ -87,9 +71,12 @@ private slots:
     void on_pushButton_Load_clicked();
     void on_pushButton_Solve_clicked();
     void on_pushButton_Restore_clicked();
-    void on_pushButton_Step_clicked();
-    void on_pushButton_Set_clicked();
     void on_pushButton_Debug_clicked();
+
+//    void on_actionRight_triggered();
+//    void on_actionDown_triggered();
+//    void on_actionLeft_triggered();
+//    void on_actionUp_triggered();
 
 private:
     Ui::MainWindow *ui;

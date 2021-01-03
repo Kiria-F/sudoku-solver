@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QDebug>
 #include <QThread>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -27,7 +28,6 @@ MainWindow::~MainWindow()
 {
     delete ui;
     freeGridMemory(memoryGrid);
-    delete root;
 }
 
 QLineEdit* MainWindow::getField(CoordsOfField cof)
@@ -542,10 +542,11 @@ void MainWindow::debugGrid(int **grid)
 
 void MainWindow::loadToRootFromMemoryGrid()
 {
-    if (!root)
+    if (root)
     {
-        root = new Tree(cloneGrid(memoryGrid));
+        delete root;
     }
+    root = new Tree(cloneGrid(memoryGrid));
 }
 
 //void MainWindow::updateField(int** grid, CoordsOfField cof)
@@ -573,6 +574,21 @@ void MainWindow::setFieldsEnabled(bool enable)
             getField({x, y})->setEnabled(enable);
         }
     }
+}
+
+CoordsOfField MainWindow::getFocusCoords()
+{
+    for (int x = 0; x < 9; x++)
+    {
+        for (int y = 0; y < 9; y++)
+        {
+            if (getField({x, y})->hasFocus())
+            {
+                return {x, y};
+            }
+        }
+    }
+    return {-1, -1};
 }
 
 void MainWindow::on_pushButton_Load_clicked()
@@ -606,19 +622,31 @@ void MainWindow::on_pushButton_Load_clicked()
         {0, 2, 7,  0, 5, 0,  0, 0, 0}
     };
 
-    int** buffer = new int*[9];
-    for (int i = 0; i < 9; i++)
-    {
-        buffer[i] = new int[9];
-    }
+    int edgeExample[9][9] = {
+        {0, 3, 0,  7, 8, 0,  0, 0, 0},
+        {0, 5, 0,  0, 0, 4,  0, 0, 0},
+        {0, 7, 0,  0, 0, 6,  0, 0, 0},
+
+        {9, 0, 0,  0, 7, 0,  2, 0, 5},
+        {7, 8, 2,  4, 6, 0,  0, 0, 0},
+        {0, 0, 5,  0, 0, 0,  0, 7, 0},
+
+        {0, 0, 0,  2, 0, 0,  5, 6, 0},
+        {0, 0, 0,  0, 0, 7,  4, 0, 2},
+        {0, 0, 0,  0, 5, 0,  0, 0, 0}
+    };
+
+    int** buffer = nullptr;
+    allocateGridMemory(buffer);
     for (int x = 0; x < 9; x++)
     {
         for (int y = 0; y < 9; y++)
         {
-            buffer[x][y] = hardExample[x][y];
+            buffer[x][y] = edgeExample[x][y];
         }
     }
     updateGrid(buffer);
+    freeGridMemory(buffer);
 }
 
 void MainWindow::on_pushButton_Solve_clicked()
@@ -631,17 +659,6 @@ void MainWindow::on_pushButton_Solve_clicked()
 void MainWindow::on_pushButton_Restore_clicked()
 {
     updateGrid(memoryGrid);
-}
-
-void MainWindow::on_pushButton_Step_clicked()
-{
-    stepSolve();
-}
-
-void MainWindow::on_pushButton_Set_clicked()
-{
-    loadToMemoryGridFromUI();
-    loadToRootFromMemoryGrid();
 }
 
 void MainWindow::on_pushButton_Debug_clicked()
@@ -965,6 +982,8 @@ void MainWindow::solve()
     while (!isGenHaveSolvedGrid(getLastGen()))
     {
         QList<Tree*> lastGen = getLastGen();
+        //qDebug() << "getting lastGen: " << timer. ;
+        //lastTime = timer.interval();
         int childsCount = getLastGen().size();
         for (int i = 0; i < childsCount; i++)
         {
@@ -972,15 +991,17 @@ void MainWindow::solve()
             addSolvesListToTree(solves, lastGen[i]);
         }
         lastGenIndex++;
-        for (int i = 0; i < childsCount; i++)
+        /*for (int i = 0; i < childsCount; i++)
         {
             qDebug() << "gen: " << lastGenIndex << endl
                      << "child num: " << i << endl;
             debugGrid(getLastGen()[i]->getData());
-        }
+        }*/
     }
 
     updateGrid(getSolvedChildFromGen(getLastGen()));
+    delete root;
+    root = nullptr;
 }
 
 void MainWindow::stepSolve()
@@ -988,3 +1009,28 @@ void MainWindow::stepSolve()
     //fillSimpleFields();
     //updateGrid(grid);
 }
+
+//void MainWindow::on_actionRight_triggered()
+//{
+//    CoordsOfField focus = getFocusCoords();
+//    if (focus.x < 8)
+//    {
+//        focus.x++;
+//        getField(focus)->setFocus();
+//    }
+//}
+
+//void MainWindow::on_actionDown_triggered()
+//{
+
+//}
+
+//void MainWindow::on_actionLeft_triggered()
+//{
+
+//}
+
+//void MainWindow::on_actionUp_triggered()
+//{
+
+//}
