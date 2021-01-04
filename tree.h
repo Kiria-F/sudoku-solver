@@ -9,7 +9,7 @@ class Tree : public QObject
     unsigned int childsCount;
     Tree** childs;
     int** data;
-    //bool active;
+    bool active;
 
 public:
     explicit Tree(int** data, QObject *parent = nullptr);
@@ -18,7 +18,8 @@ public:
     unsigned int getChildsCount();
     Tree* getChild(unsigned int index);
     int** getData();
-    //bool isActive();
+    bool isActive();
+    void deactive();
 
 signals:
 

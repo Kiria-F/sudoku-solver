@@ -11,19 +11,19 @@ struct CoordsOfField
     int y;
 };
 
-struct fieldExploreResult
+struct FieldExploreResult
 {
     int value;
     bool solves[9];
     int solvesCount;
 };
 
-struct gridExploreResult
+struct GridExploreResult
 {
     bool isSolvable;
     bool isSolved;
-    int minimalSolvesCountFieldsCount;
-    CoordsOfField firstMinimalSolvesCountField;
+    FieldExploreResult minimalSolvesCountField;
+    CoordsOfField minimalSolvesCountFieldCoords;
     int emptyFieldsCount;
 };
 
@@ -53,25 +53,26 @@ public:
     void setFieldsEnabled(bool enable);  // Устанавливает флаг isEnabled у всех полей
     CoordsOfField getFocusCoords();  // Возвращает координаты поля под фокусом
 
-    void debugGrid(int** grid);  // Отображает сетку в окне дебага
+    void debugGrid(int** grid, bool solveCounts = false);  // Отображает сетку в окне дебага
     void loadToRootFromMemoryGrid();  // Загружает сетку в корень из memoryGrid
     bool fieldValidation(int** grid, CoordsOfField cof);  // Проверяет поле на валидность [F]
     bool gridValidation(int** grid);  // Проверяет сетку на валидность [G]
     bool* findFieldSolves(int** grid, CoordsOfField cof);  // Возвращает список допустимых значений поля [F]
     int findFieldSolvesCount(int** grid, CoordsOfField cof);  // Возвращает кол-во решений поля [F]
     int findFieldSolvesCount(bool* solves);  // Возвращает кол-во решений поля [F]
-    int findMinimalSolvesCount(int** grid);  // Возвращает минимальное кол-во возможных решений полей сетки [G]
+    int findMinimalSolvesCountFieldSolvesCount(int** grid);  // Возвращает КВР поля с минимальным КВР [G]
     CoordsOfField findFieldForSolvesCount(int** grid, int solvesCount);  // Возвращает первое поле по его КВР (кол-ву возможных решений) [G]
     CoordsOfField findMinimalSolvesCountField(int** grid);  // Возвращает первое поле с минимальным кол-вом решений [G]
     int findEmptyFieldsCount(int** grid);  // Возвращает кол-во пустых полей сетки [G]
     QList<Tree*> getLastGen();  // Возвращает список сеток последнего поколения
     Tree* isGenHaveSolvedGrid(QList<Tree*> gen);  // Возвращает решённую сетку поколения, если таковая имеется
     QList<int**> findGridSolves(int** grid);  // Возвращает список следующего поколения решений сетки
+    QList<int**> findGridSolves(int** grid, GridExploreResult gridExploreResult);  // Возвращает список следующего поколения решений сетки
     void addSolvesListToTree(QList<int**> solves, Tree* tree);  // Добавляет список решений в дерево
     int** getSolvedChildFromGen(QList<Tree*> gen);  // Возвращает решённую сетку из поколения
     bool isGridSolvable(int** grid);  // Распознаёт неразрешимую сетку [G]
-    fieldExploreResult exploreField(int** grid, CoordsOfField cof);  // Исследует поле
-    gridExploreResult exploreGrid(int** grid);  // Исследует поле
+    FieldExploreResult exploreField(int** grid, CoordsOfField cof);  // Исследует поле
+    GridExploreResult exploreGrid(int** grid);  // Исследует поле
 
     void freeGridMemory(int**& grid);  // Освобождает память из-под сетки
     void allocateGridMemory(int**& grid);  // Выделяет память под сетку
@@ -82,8 +83,8 @@ public:
     void fillSimpleField(int** grid, CoordsOfField cof);  // Заполняет поля сетки с КВР = 1
     void fillSimpleFields(int** grid);  // Заполняет поля сетки с КВР = 1
 
-    void solve();  // Запуск алгоритма решения
-    void stepSolve();  // Запуск алгоритма пошагового решения
+    void solve();  // Запуск старого некрутого неоптимизированного рабочего алгоритма решения
+    void solve_NEW();  // Запуск нового крутого оптимизированного нерабочего алгоритма решения
 
 private slots:
 
@@ -91,6 +92,7 @@ private slots:
     void on_pushButton_Solve_clicked();
     void on_pushButton_Restore_clicked();
     void on_pushButton_Debug_clicked();
+    void on_pushButton_SolveNEW_clicked();
 
 //    void on_actionRight_triggered();
 //    void on_actionDown_triggered();

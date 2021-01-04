@@ -526,14 +526,21 @@ int** MainWindow::getGrigFromUI()
     return grid;
 }
 
-void MainWindow::debugGrid(int **grid)
+void MainWindow::debugGrid(int **grid, bool solveCounts)
 {
     for (int x = 0; x < 9; x++)
     {
         QString debugString = " ";
         for (int y = 0; y < 9; y++)
         {
-            debugString.append(QString::number(grid[x][y])).append(' ');
+            if (solveCounts)
+            {
+                debugString.append(QString::number(findFieldSolvesCount(grid, {x, y})).append(' '));
+            }
+            else
+            {
+                debugString.append(QString::number(grid[x][y])).append(' ');
+            }
         }
         qDebug() << debugString;
     }
@@ -652,7 +659,6 @@ void MainWindow::on_pushButton_Load_clicked()
 void MainWindow::on_pushButton_Solve_clicked()
 {
     loadToMemoryGridFromUI();
-    loadToRootFromMemoryGrid();
     solve();
 }
 
@@ -676,6 +682,12 @@ void MainWindow::on_pushButton_Debug_clicked()
     }
     qDebug() << "\n\n";
     freeGridMemory(buffer);
+}
+
+void MainWindow::on_pushButton_SolveNEW_clicked()
+{
+    loadToMemoryGridFromUI();
+    solve_NEW();
 }
 
 bool* MainWindow::findFieldSolves(int** grid, CoordsOfField cof)
@@ -805,7 +817,7 @@ QList<CoordsOfField> MainWindow::findSimpleFields(int** grid)
     return result;
 }
 
-int MainWindow::findMinimalSolvesCount(int** grid)
+int MainWindow::findMinimalSolvesCountFieldSolvesCount(int** grid)
 {
     int minimalSolvesCount = 10;
     for (int x = 0; x < 9; x++)
@@ -846,7 +858,7 @@ CoordsOfField MainWindow::findFieldForSolvesCount(int** grid, int solvesCount)
 
 CoordsOfField MainWindow::findMinimalSolvesCountField(int** grid)
 {
-    return findFieldForSolvesCount(grid, findMinimalSolvesCount(grid));
+    return findFieldForSolvesCount(grid, findMinimalSolvesCountFieldSolvesCount(grid));
 }
 
 int MainWindow::findEmptyFieldsCount(int** grid)
@@ -882,10 +894,10 @@ QList<Tree*> MainWindow::getLastGen()
             for (int c = 0; c < childsCount; c++)
             {
                 Tree* child = branch->getChild(c);
-                //if (child->isActive())
-                //{
-                lastGen.append(child);
-                //}
+                if (child->isActive())
+                {
+                    lastGen.append(child);
+                }
             }
         }
     }
@@ -907,7 +919,7 @@ Tree* MainWindow::isGenHaveSolvedGrid(QList<Tree*> gen)
 
 QList<int**> MainWindow::findGridSolves(int **grid)
 {
-    int nextGenChildsCount = findMinimalSolvesCount(grid);
+    int nextGenChildsCount = findMinimalSolvesCountFieldSolvesCount(grid);
     QList<int**> gridSolves;
     if (nextGenChildsCount == 1)
     {
@@ -925,6 +937,30 @@ QList<int**> MainWindow::findGridSolves(int **grid)
             {
                 int** nextGenChild = cloneGrid(grid);
                 nextGenChild[cof.x][cof.y] = i + 1;
+                gridSolves.append(nextGenChild);
+            }
+        }
+    }
+    return gridSolves;
+}
+
+QList<int**> MainWindow::findGridSolves(int **grid, GridExploreResult gridExploreResult)
+{
+    QList<int**> gridSolves;
+    if (gridExploreResult.minimalSolvesCountField.solvesCount == 1)
+    {
+        int** nextGenChild = cloneGrid(grid);
+        fillSimpleFields(nextGenChild);
+        gridSolves.append(nextGenChild);
+    }
+    else
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if (gridExploreResult.minimalSolvesCountField.solves[i])
+            {
+                int** nextGenChild = cloneGrid(grid);
+                nextGenChild[gridExploreResult.minimalSolvesCountFieldCoords.x][gridExploreResult.minimalSolvesCountFieldCoords.y] = i + 1;
                 gridSolves.append(nextGenChild);
             }
         }
@@ -991,9 +1027,9 @@ void MainWindow::fillSimpleFields(int** grid)
     }
 }
 
-fieldExploreResult MainWindow::exploreField(int **grid, CoordsOfField cof)
+FieldExploreResult MainWindow::exploreField(int **grid, CoordsOfField cof)
 {
-    fieldExploreResult result;
+    FieldExploreResult result;
     result.value = grid[cof.x][cof.y];
 
     bool clear = !grid[cof.x][cof.y];
@@ -1044,38 +1080,47 @@ fieldExploreResult MainWindow::exploreField(int **grid, CoordsOfField cof)
     return result;
 }
 
-gridExploreResult MainWindow::exploreGrid(int **grid)
+GridExploreResult MainWindow::exploreGrid(int **grid)
 {
-    gridExploreResult result = {false, true, 10, {10, 10}, 0};
-    int minimalSolvesCount = 10;
+    GridExploreResult result;
+    result.isSolvable = true;
+    result.isSolved = true;
+    result.minimalSolvesCountFieldCoords = {10, 10};
+    result.emptyFieldsCount = 0;
+    result.minimalSolvesCountField = {10, {false, false, false, false, false, false, false, false, false}, 10};
     for (int x = 0; x < 9; x++)
     {
         for (int y = 0; y < 9; y++)
         {
-            fieldExploreResult fieldExplore = exploreField(grid, {x, y});
-            if (fieldExplore.value)
+            FieldExploreResult fieldExploreResult = exploreField(grid, {x, y});
+            if (!fieldExploreResult.value)
             {
-                if (minimalSolvesCount < fieldExplore.solvesCount)
-                {
-                    minimalSolvesCount = fieldExplore.solvesCount;
-                }
-                if (!fieldExplore.solvesCount)
+                result.emptyFieldsCount++;
+                if (!fieldExploreResult.solvesCount)
                 {
                     result.isSolvable = false;
                 }
-            }
-            else
-            {
-                result.emptyFieldsCount++;
-                result.isSolved = false;
+                else
+                {
+                    if (result.minimalSolvesCountField.solvesCount > fieldExploreResult.solvesCount)
+                    {
+                        result.minimalSolvesCountField = fieldExploreResult;
+                        result.minimalSolvesCountFieldCoords = {x, y};
+                    }
+                }
             }
         }
+    }
+    if (result.emptyFieldsCount)
+    {
+        result.isSolved = false;
     }
     return result;
 }
 
 void MainWindow::solve()
 {
+    loadToRootFromMemoryGrid();
     lastGenIndex = 0;
     while (!isGenHaveSolvedGrid(getLastGen()))
     {
@@ -1085,8 +1130,15 @@ void MainWindow::solve()
         int childsCount = getLastGen().size();
         for (int i = 0; i < childsCount; i++)
         {
-            QList<int**> solves = findGridSolves(lastGen[i]->getData());
-            addSolvesListToTree(solves, lastGen[i]);
+            if (isGridSolvable(lastGen[i]->getData()))
+            {
+                QList<int**> solves = findGridSolves(lastGen[i]->getData());
+                addSolvesListToTree(solves, lastGen[i]);
+            }
+            else
+            {
+                lastGen[i]->deactive();
+            }
         }
         lastGenIndex++;
         /*for (int i = 0; i < childsCount; i++)
@@ -1102,10 +1154,45 @@ void MainWindow::solve()
     root = nullptr;
 }
 
-void MainWindow::stepSolve()
+void MainWindow::solve_NEW()
 {
-    //fillSimpleFields();
-    //updateGrid(grid);
+    loadToRootFromMemoryGrid();
+    lastGenIndex = 0;
+    bool solved = false;
+    //bool solvable = true;
+    int** result = nullptr;
+    while (!solved)
+    {
+        QList<Tree*> lastGen = getLastGen();
+        int lastGenChildsCount = lastGen.size();
+        for (int i = 0; i < lastGenChildsCount; i++)
+        {
+            GridExploreResult gridExploreResult = exploreGrid(lastGen[i]->getData());
+            solved = gridExploreResult.isSolved;
+            //solvable = gridExploreResult.isSolvable;
+            if (!gridExploreResult.isSolvable)
+            {
+                lastGen[i]->deactive();
+            }
+            if (!solved)
+            {
+                QList<int**> solves = findGridSolves(lastGen[i]->getData(), gridExploreResult);
+                addSolvesListToTree(solves, lastGen[i]);
+            }
+            else
+            {
+                result = cloneGrid(lastGen[i]->getData());
+            }
+        }
+        if (!solved)
+        {
+            lastGenIndex++;
+        }
+    }
+    updateGrid(result);
+    freeGridMemory(result);
+    delete root;
+    root = nullptr;
 }
 
 //void MainWindow::on_actionRight_triggered()

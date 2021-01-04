@@ -5,6 +5,7 @@ Tree::Tree(int** data, QObject *parent) : QObject(parent)
     childsCount = 0;
     childs = nullptr;
     this->data = data;
+    active = true;
 }
 
 Tree::~Tree()
@@ -55,7 +56,12 @@ int** Tree::getData()
     return data;
 }
 
-//bool Tree::isActive()
-//{
-//    return active;
-//}
+bool Tree::isActive()
+{
+    return active;
+}
+
+void Tree::deactive()
+{
+    active = false;
+}

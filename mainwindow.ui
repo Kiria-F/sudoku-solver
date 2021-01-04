@@ -2157,6 +2157,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_SolveNEW">
+           <property name="text">
+            <string>Solve NEW</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
