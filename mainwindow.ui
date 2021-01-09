@@ -23,11 +23,14 @@
    <layout class="QHBoxLayout" name="horizontalLayout_4">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="spacing">
+       <number>7</number>
+      </property>
       <property name="leftMargin">
-       <number>10</number>
+       <number>20</number>
       </property>
       <property name="rightMargin">
-       <number>10</number>
+       <number>20</number>
       </property>
       <item>
        <layout class="QGridLayout" name="gridLayout_main">

@@ -10,6 +10,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->frame_Debug->setVisible(false);
+    ui->line->setVisible(false);
+    ui->pushButton_Load->setVisible(false);
     this->setFixedSize(this->minimumSize());
     root = nullptr;
     allocateGridMemory(memoryGrid);
