@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QThread>
 #include <QTimer>
+#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -29,6 +30,51 @@ MainWindow::~MainWindow()
     delete ui;
     freeGridMemory(memoryGrid);
 }
+
+void MainWindow::keyReleaseEvent(QKeyEvent *e)
+{
+    switch (e->key()) {
+    case Qt::Key_Up:
+        moveSelectionUp();
+        break;
+    case Qt::Key_Down:
+        moveSelectionDown();
+        break;
+    case Qt::Key_Left:
+        moveSelectionLeft();
+        break;
+    case Qt::Key_Right:
+        moveSelectionRight();
+        break;
+    }
+}
+
+/*bool MainWindow::event(QEvent *event)
+{
+    if (event->type() == QEvent::KeyRelease) {
+        QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+        switch (ke->key()) {
+        case Qt::Key_Up:
+            moveSelectionUp();
+            break;
+        case Qt::Key_Down:
+            moveSelectionDown();
+            break;
+        case Qt::Key_Left:
+            moveSelectionLeft();
+            break;
+        case Qt::Key_Right:
+            moveSelectionRight();
+            break;
+        }
+    }
+    else
+    {
+        qDebug() << event->type();
+    }
+
+    return QWidget::event(event);
+}*/
 
 QLineEdit* MainWindow::getField(CoordsOfField cof)
 {
@@ -596,6 +642,46 @@ CoordsOfField MainWindow::getFocusCoords()
         }
     }
     return {-1, -1};
+}
+
+void MainWindow::moveSelectionRight()
+{
+    CoordsOfField focus = getFocusCoords();
+    if (focus.y < 8)
+    {
+        focus.y++;
+        getField(focus)->setFocus();
+    }
+}
+
+void MainWindow::moveSelectionDown()
+{
+    CoordsOfField focus = getFocusCoords();
+    if (focus.x < 8)
+    {
+        focus.x++;
+        getField(focus)->setFocus();
+    }
+}
+
+void MainWindow::moveSelectionLeft()
+{
+    CoordsOfField focus = getFocusCoords();
+    if (focus.y > 0)
+    {
+        focus.y--;
+        getField(focus)->setFocus();
+    }
+}
+
+void MainWindow::moveSelectionUp()
+{
+    CoordsOfField focus = getFocusCoords();
+    if (focus.x > 0)
+    {
+        focus.x--;
+        getField(focus)->setFocus();
+    }
 }
 
 void MainWindow::on_pushButton_Load_clicked()
@@ -1194,28 +1280,3 @@ void MainWindow::solve_NEW()
     delete root;
     root = nullptr;
 }
-
-//void MainWindow::on_actionRight_triggered()
-//{
-//    CoordsOfField focus = getFocusCoords();
-//    if (focus.x < 8)
-//    {
-//        focus.x++;
-//        getField(focus)->setFocus();
-//    }
-//}
-
-//void MainWindow::on_actionDown_triggered()
-//{
-
-//}
-
-//void MainWindow::on_actionLeft_triggered()
-//{
-
-//}
-
-//void MainWindow::on_actionUp_triggered()
-//{
-
-//}

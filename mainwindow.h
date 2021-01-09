@@ -42,6 +42,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);  // Конструктор чо
     ~MainWindow();  // Деструктор чо
+    void keyReleaseEvent(QKeyEvent *e);  // Обработчик событий
+    //bool event(QEvent *e);
 
     QLineEdit* getField(CoordsOfField cof);  // Возвращает поле UI по координатам
     void setFieldValue(CoordsOfField cof, const int value);  // Устанавливает value в поле UI
@@ -52,6 +54,10 @@ public:
     void updateGrid(int** grid);  // Обновляет сетку UI
     void setFieldsEnabled(bool enable);  // Устанавливает флаг isEnabled у всех полей
     CoordsOfField getFocusCoords();  // Возвращает координаты поля под фокусом
+    void moveSelectionRight();
+    void moveSelectionDown();
+    void moveSelectionLeft();
+    void moveSelectionUp();
 
     void debugGrid(int** grid, bool solveCounts = false);  // Отображает сетку в окне дебага
     void loadToRootFromMemoryGrid();  // Загружает сетку в корень из memoryGrid
@@ -93,11 +99,6 @@ private slots:
     void on_pushButton_Restore_clicked();
     void on_pushButton_Debug_clicked();
     void on_pushButton_SolveNEW_clicked();
-
-//    void on_actionRight_triggered();
-//    void on_actionDown_triggered();
-//    void on_actionLeft_triggered();
-//    void on_actionUp_triggered();
 
 private:
     Ui::MainWindow *ui;
